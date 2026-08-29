@@ -1,4 +1,5 @@
 import type { VerificationInput, VerificationResult, WebVerifier } from "@/lib/resurrection/verify";
+import { resolvePreviewUrl } from "@/lib/server/preview-url";
 
 const DEMO_PORT = 3000;
 const DEMO_VERIFICATION_DELAY_MS = 20;
@@ -11,7 +12,7 @@ export class DemoWebVerifier implements WebVerifier {
       httpStatus: 200,
       isVerified: true,
       port: DEMO_PORT,
-      previewUrl: "https://demo.invalid/preview",
+      previewUrl: resolvePreviewUrl(DEMO_PORT),
       processAlive: true,
       stderr: "",
       stdout: "Demo Next.js server verified.",

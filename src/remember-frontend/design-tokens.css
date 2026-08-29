@@ -1,22 +1,48 @@
 /**
- * [Name] Design System — tokens derived from hero + landing page
+ * Remember Design System — dark off-black + archival resurrection screens
  */
 
 :root {
-  /* Core palette */
+  /* Landing / cinematic */
   --name-black: #010101;
   --name-bg: #0a0a0a;
   --name-bg-deep: #050505;
   --name-cta-top: #2b2b2b;
   --name-cta-bottom: #101010;
 
+  /* Dashboard / resurrection — dark archival */
+  --archive-bg: #0a0a0a;
+  --archive-bg-deep: #050505;
+  --archive-bg-panel: #111111;
+  --archive-ink: #fafaf9;
+  --archive-muted: rgb(255 255 255 / 0.55);
+  --archive-faint: rgb(255 255 255 / 0.32);
+  --archive-border: rgb(255 255 255 / 0.1);
+  --archive-border-strong: rgb(255 255 255 / 0.18);
+  --archive-success: #34d399;
+  --archive-success-bg: rgb(52 211 153 / 0.1);
+  --archive-success-border: rgb(52 211 153 / 0.28);
+  --archive-warning: #fbbf24;
+  --archive-warning-bg: rgb(251 191 36 / 0.1);
+  --archive-error: #f87171;
+  --archive-error-bg: rgb(248 113 113 / 0.1);
+  --archive-specimen-shadow: 0 1px 2px rgb(0 0 0 / 0.2), 0 8px 24px rgb(0 0 0 / 0.35);
+
+  /* Mesh gradient blobs — warm stone, no purple */
+  --mesh-warm-1: rgb(120 113 108 / 0.09);
+  --mesh-warm-2: rgb(87 83 78 / 0.07);
+  --mesh-warm-3: rgb(68 64 60 / 0.08);
+  --mesh-warm-4: rgb(41 37 36 / 0.11);
+  --mesh-accent: rgb(52 211 153 / 0.04);
+
   /* Typography */
   --font-body: "Geist", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, monospace;
   --font-display-stat: "Silkscreen", cursive;
 
   /* Glass surfaces */
   --glass-nav: rgb(255 255 255 / 0.1);
-  --glass-card: rgb(255 255 255 / 0.1);
+  --glass-card: rgb(255 255 255 / 0.06);
   --glass-blur-lg: 16px;
   --glass-blur-xl: 24px;
 
@@ -49,7 +75,7 @@
   }
 }
 
-/* CTA gradient pill */
+/* Landing CTA */
 .name-cta-gradient {
   background: linear-gradient(to bottom, var(--name-cta-top), var(--name-cta-bottom));
 }
@@ -58,8 +84,49 @@
   opacity: 0.9;
 }
 
+/* Dashboard CTA — same dark gradient pill */
+.archive-cta {
+  background: linear-gradient(to bottom, var(--name-cta-top), var(--name-cta-bottom));
+  color: #fff;
+}
+
+.archive-cta:hover {
+  opacity: 0.9;
+}
+
 /* Stats number — Silkscreen only */
 .name-stat-number {
   font-family: var(--font-display-stat);
   font-weight: 400;
+}
+
+/* Accession label */
+.accession-label {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.08em;
+  color: var(--archive-muted);
+}
+
+/* Specimen / glass card */
+.specimen-card {
+  background: rgb(255 255 255 / 0.03);
+  border: 1px solid var(--archive-border);
+  backdrop-filter: blur(8px);
+}
+
+.specimen-card:hover {
+  background: rgb(255 255 255 / 0.05);
+  border-color: var(--archive-border-strong);
+}
+
+/* Subtle mesh gradient background */
+.mesh-bg {
+  background-color: var(--archive-bg);
+  background-image:
+    radial-gradient(ellipse 80% 60% at 15% 20%, var(--mesh-warm-1), transparent 55%),
+    radial-gradient(ellipse 70% 50% at 85% 15%, var(--mesh-warm-2), transparent 50%),
+    radial-gradient(ellipse 60% 55% at 70% 85%, var(--mesh-warm-3), transparent 52%),
+    radial-gradient(ellipse 50% 45% at 10% 90%, var(--mesh-warm-4), transparent 48%),
+    radial-gradient(ellipse 40% 35% at 50% 50%, var(--mesh-accent), transparent 60%);
 }

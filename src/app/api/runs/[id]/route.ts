@@ -1,11 +1,9 @@
-import { tmpdir } from "node:os";
-import { join } from "node:path";
-
 import { FileRunStore } from "@/lib/store/file-run-store";
 import type { ResurrectionRun } from "@/lib/contracts/run";
 import { errorMessage } from "@/lib/contracts/validation";
+import { resolveRunDirectory } from "@/lib/server/env";
 
-const RUN_DIRECTORY = process.env.PROJECT_RESURRECTION_RUN_DIR ?? join(tmpdir(), "project-resurrection-runs");
+const RUN_DIRECTORY = resolveRunDirectory();
 const RUN_ID_PATTERN = /^run_[0-9a-f-]{36}$/;
 const RUN_STORE = new FileRunStore(RUN_DIRECTORY);
 

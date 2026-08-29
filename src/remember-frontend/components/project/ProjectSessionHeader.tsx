@@ -1,58 +1,70 @@
 import { Link } from "react-router-dom";
-import { Pause, Wrench } from "lucide-react";
+import { Pause } from "lucide-react";
 import { Logo } from "../Logo";
 import { PRODUCT_NAME } from "../../constants";
 
 type ProjectSessionHeaderProps = {
   sessionId: string;
-  isLive: boolean;
+  statusLabel: string;
+  statusTone?: "progress" | "success" | "idle";
   projectLabel: string;
+  showPause?: boolean;
 };
 
 export function ProjectSessionHeader({
   sessionId,
-  isLive,
+  statusLabel,
+  statusTone = "idle",
   projectLabel,
+  showPause = true,
 }: ProjectSessionHeaderProps) {
+  const statusStyles = {
+    progress: "border-amber-500/30 bg-amber-500/10 text-amber-200",
+    success: "border-archive-success-border bg-archive-success-bg text-archive-success",
+    idle: "border-archive-border bg-white/[0.04] text-archive-muted",
+  };
+
   return (
     <header
       data-animate="project-header"
-      className="flex shrink-0 items-center justify-between border-b border-white/10 bg-[#050505] px-4 py-3 sm:px-6"
+      className="flex shrink-0 items-center justify-between border-b border-archive-border bg-[#0a0a0a]/70 px-4 py-3 backdrop-blur-xl sm:px-6"
     >
       <div className="flex items-center gap-4">
-        <Link to="/" className="flex items-center gap-2 text-white/60 transition-colors hover:text-white">
-          <Logo className="h-5 w-5 fill-white/80" />
+        <Link
+          to="/"
+          className="flex items-center gap-2 text-archive-muted transition-colors hover:text-archive-ink"
+        >
+          <Logo className="h-5 w-5 fill-archive-ink/80" />
           <span className="hidden text-sm font-semibold sm:inline">{PRODUCT_NAME}</span>
         </Link>
-        <div className="hidden h-4 w-px bg-white/10 sm:block" />
-        <div className="flex items-center gap-2">
-          <Wrench className="h-4 w-4 text-white/50" />
-          <span className="text-xs font-medium text-white/70">
-            Project resurrection
-          </span>
-        </div>
+        <div className="hidden h-4 w-px bg-archive-border sm:block" />
+        <span className="accession-label hidden sm:inline">Accession {sessionId}</span>
       </div>
 
       <div className="flex items-center gap-2 sm:gap-4">
-        {isLive && (
-          <div className="flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1">
-            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-amber-400" />
-            <span className="text-[10px] font-medium text-amber-200">
-              Live repair race
-            </span>
-          </div>
-        )}
-        <span className="hidden font-mono text-xs text-white/40 sm:inline">{projectLabel}</span>
-        <span className="font-mono text-xs text-white/50">
-          Session <span className="text-white/70">{sessionId}</span>
-        </span>
-        <button
-          type="button"
-          className="flex items-center gap-1.5 rounded-full border border-white/10 px-3 py-1.5 text-xs text-white/60 transition-colors hover:border-white/20 hover:text-white"
+        <div
+          className={`flex items-center gap-2 rounded-full border px-3 py-1 ${statusStyles[statusTone]}`}
         >
-          <Pause className="h-3 w-3" />
-          <span className="hidden sm:inline">Pause</span>
-        </button>
+          {statusTone === "progress" && (
+            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-amber-500" />
+          )}
+          {statusTone === "success" && (
+            <span className="h-1.5 w-1.5 rounded-full bg-archive-success" />
+          )}
+          <span className="text-xs font-medium">{statusLabel}</span>
+        </div>
+        <span className="hidden font-mono text-xs text-archive-faint sm:inline">
+          {projectLabel}
+        </span>
+        {showPause && (
+          <button
+            type="button"
+            className="flex items-center gap-1.5 rounded-full border border-archive-border px-3 py-1.5 text-xs text-archive-muted transition-colors hover:border-archive-border-strong hover:text-archive-ink"
+          >
+            <Pause className="h-3 w-3" />
+            <span className="hidden sm:inline">Pause</span>
+          </button>
+        )}
       </div>
     </header>
   );

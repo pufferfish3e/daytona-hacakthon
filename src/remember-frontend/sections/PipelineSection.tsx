@@ -32,18 +32,21 @@ export function PipelineSection() {
   return (
     <section id="pipeline" className="border-t border-white/10 bg-[#0a0a0a] px-5 py-20 sm:px-8 sm:py-28 lg:px-12">
       <div className="mx-auto max-w-6xl">
-        <SectionLabel>Pipeline</SectionLabel>
-        <h2 className="mt-4 max-w-2xl text-3xl font-semibold leading-[1.1] tracking-tight text-white sm:text-4xl">
-          From dormant repo to living prototype
-        </h2>
-        <p className="mt-4 max-w-xl text-base leading-relaxed text-white/60">
-          Four stages. Fully automated where possible, human-reviewed where it matters.
-        </p>
+        <div data-animate="section">
+          <SectionLabel>Pipeline</SectionLabel>
+          <h2 className="mt-4 max-w-2xl text-3xl font-semibold leading-[1.1] tracking-tight text-white sm:text-4xl">
+            From dormant repo to living prototype
+          </h2>
+          <p className="mt-4 max-w-xl text-base leading-relaxed text-white/60">
+            Four stages. Fully automated where possible, human-reviewed where it matters.
+          </p>
+        </div>
 
         <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {STEPS.map((step) => (
             <article
               key={step.num}
+              data-animate="card"
               className="group rounded-2xl border border-white/10 bg-white/[0.03] p-6 transition-colors hover:border-white/20 hover:bg-white/[0.06]"
             >
               <div className="mb-6 flex items-center justify-between">

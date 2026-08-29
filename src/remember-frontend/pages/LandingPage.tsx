@@ -1,5 +1,7 @@
+import { useLandingPageAnimations } from "../hooks/useLandingPageAnimations";
 import { Navigation } from "../components/Navigation";
 import { HeroSection } from "../sections/HeroSection";
+import { LogoStripSection } from "../sections/LogoStripSection";
 import { ProblemSection } from "../sections/ProblemSection";
 import { PipelineSection } from "../sections/PipelineSection";
 import { UseCasesSection } from "../sections/UseCasesSection";
@@ -9,10 +11,13 @@ import { CtaSection } from "../sections/CtaSection";
 import { Footer } from "../sections/Footer";
 
 export function LandingPage() {
+  const rootRef = useLandingPageAnimations();
+
   return (
-    <div className="bg-[#0a0a0a] text-white">
+    <div ref={rootRef} className="bg-[#0a0a0a] text-white">
       <Navigation overHero />
       <HeroSection />
+      <LogoStripSection />
       <ProblemSection />
       <ComparisonSection />
       <PipelineSection />

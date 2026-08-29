@@ -1,4 +1,5 @@
 import { SectionLabel } from "../components/SectionLabel";
+import { RebuildTerminal } from "../components/RebuildTerminal";
 
 const STATS = [
   { value: "73%", label: "of archived repos have broken dependency chains" },
@@ -13,7 +14,7 @@ export function ProblemSection() {
       className="border-t border-white/10 bg-[#0a0a0a] px-5 py-20 sm:px-8 sm:py-28 lg:px-12"
     >
       <div className="mx-auto max-w-6xl">
-        <div className="grid gap-12 lg:grid-cols-2 lg:gap-20 lg:items-end">
+        <div data-animate="section" className="grid gap-12 lg:grid-cols-2 lg:gap-20 lg:items-end">
           <div>
             <SectionLabel>The gap</SectionLabel>
             <h2 className="mt-4 text-3xl font-semibold leading-[1.1] tracking-tight text-white sm:text-4xl lg:text-5xl">
@@ -31,6 +32,7 @@ export function ProblemSection() {
             {STATS.map((stat) => (
               <div
                 key={stat.label}
+                data-animate="card"
                 className="border-l border-white/15 pl-6 transition-colors hover:border-white/40"
               >
                 <p className="name-stat-number text-4xl tracking-tight text-white sm:text-5xl">
@@ -40,6 +42,20 @@ export function ProblemSection() {
               </div>
             ))}
           </div>
+        </div>
+
+        <div className="mt-20 lg:mt-28">
+          <div data-animate="section" className="mb-8 max-w-xl">
+            <SectionLabel>Live rebuild</SectionLabel>
+            <h3 className="mt-4 text-2xl font-semibold tracking-tight text-white sm:text-3xl">
+              Watch a dormant repo come back online
+            </h3>
+            <p className="mt-3 text-sm leading-relaxed text-white/50 sm:text-base">
+              Point at any archived codebase. We clone, repair dependencies, spin up an isolated
+              sandbox, and hand you a link anyone can click through.
+            </p>
+          </div>
+          <RebuildTerminal />
         </div>
       </div>
     </section>

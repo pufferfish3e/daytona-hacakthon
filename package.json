@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "demo:preview": "node scripts/demo-preview-server.mjs"
   },
   "dependencies": {
     "@daytona/sdk": "^0.207.0",

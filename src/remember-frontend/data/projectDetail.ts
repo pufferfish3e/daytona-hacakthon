@@ -1,5 +1,7 @@
+import type { ResurrectionRun } from "@/lib/contracts/run";
 import type { Project, ProjectStatus } from "../types/dashboard";
 import type { ProjectDetail } from "../types/projectDetail";
+import { projectDetailFromRun } from "../lib/run-mapper";
 
 function sessionIdFromProject(id: string): string {
   const hex = id.replace(/\D/g, "").slice(-6).padStart(6, "0");
@@ -97,32 +99,38 @@ function lanesForStatus(status: ProjectStatus): ProjectDetail["repairLanes"] {
   return [
     {
       id: "env",
-      title: "Environment",
+      laneLetter: "A",
+      title: "Historical Node runtime",
       accent: "emerald",
+      invasiveness: "environment",
       status: pastRepair ? "passed" : repairing ? "verifying" : failed ? "failed" : "pending",
-      statusLabel: pastRepair ? "Passed" : repairing ? "Repairing…" : "Pending",
+      statusLabel: pastRepair ? "Booted" : repairing ? "Repairing…" : "Pending",
       hypothesis: "Node version incompatibility — pin to LTS runtime",
       changedFiles: [".nvmrc", ".node-version"],
       footerStatus: pastRepair ? "Verified" : repairing ? "Verifying…" : "Waiting",
     },
     {
       id: "config",
-      title: "Config",
+      laneLetter: "B",
+      title: "Legacy dependency resolution",
       accent: "amber",
+      invasiveness: "dependency",
       status: pastRepair ? "passed" : repairing ? "repairing" : failed ? "failed" : "pending",
       statusLabel: pastRepair ? "Passed" : repairing ? "Repairing…" : "Pending",
-      hypothesis: "Build config references deprecated Next.js options",
-      changedFiles: ["next.config.js", "tsconfig.json"],
+      hypothesis: "Enable legacy peer dependency resolution mode",
+      changedFiles: ["package.json", ".npmrc"],
       footerStatus: pastRepair ? "Checks passed" : repairing ? "Running checks…" : "Waiting",
     },
     {
       id: "deps",
-      title: "Dependency",
+      laneLetter: "C",
+      title: "Minimal compatibility patch",
       accent: "red",
+      invasiveness: "source",
       status: pastRepair ? "passed" : repairing ? "failed" : failed ? "failed" : "pending",
       statusLabel: pastRepair ? "Passed" : repairing ? "Repairing…" : "Pending",
-      hypothesis: "Outdated deps breaking install — selective pin and patch",
-      changedFiles: ["package.json", "package-lock.json"],
+      hypothesis: "Patch deprecated Sass API usage only",
+      changedFiles: ["src/styles/main.scss"],
       footerStatus: pastRepair ? "Tests passed" : repairing ? "Tests failed" : "Waiting",
     },
   ];
@@ -134,7 +142,9 @@ const DEFAULT_PROFILE: ProjectDetail["profile"] = [
   { name: "npm", version: "v8.1.2" },
 ];
 
-export function getProjectDetail(project: Project): ProjectDetail {
+export function getProjectDetail(project: Project, run?: ResurrectionRun): ProjectDetail {
+  if (run) return projectDetailFromRun(project, run);
+
   const elapsed =
     project.status === "ingesting"
       ? 45

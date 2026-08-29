@@ -23,11 +23,9 @@ function RepoThumbnail({
         className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
         loading="lazy"
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
       <div className="absolute bottom-0 left-0 right-0 p-4">
-        <p className="text-[10px] text-white/50">
-          Archive preview
-        </p>
+        <p className="font-mono text-[10px] tracking-wide text-white/60">Archive preview</p>
         <p className="mt-1 text-sm font-medium text-white">
           {owner}/{name}
         </p>
@@ -41,25 +39,25 @@ export function RepoCard({ repo, onSelect }: RepoCardProps) {
     <button
       type="button"
       onClick={() => onSelect(repo)}
-      className="group flex w-full flex-col rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-left transition-colors hover:border-white/20 hover:bg-white/[0.06]"
+      className="specimen-card group flex w-full flex-col rounded-2xl p-4 text-left transition-colors hover:border-archive-border-strong"
     >
       <RepoThumbnail owner={repo.owner} name={repo.name} imageUrl={repo.imageUrl} />
       <div className="mt-4 flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <h3 className="truncate text-base font-semibold text-white">
+          <h3 className="truncate text-base font-semibold text-archive-ink">
             {repo.owner}/{repo.name}
           </h3>
-          <p className="mt-1 text-sm text-white/50">
+          <p className="mt-1 text-sm text-archive-muted">
             {repo.language} · last commit {repo.lastCommitYear}
           </p>
         </div>
-        <ArrowRight className="mt-0.5 h-4 w-4 shrink-0 text-white/30 transition-transform group-hover:translate-x-0.5 group-hover:text-white/70" />
+        <ArrowRight className="mt-0.5 h-4 w-4 shrink-0 text-archive-faint transition-transform group-hover:translate-x-0.5 group-hover:text-archive-ink" />
       </div>
       <div className="mt-3 flex flex-wrap gap-2">
         {repo.tags.map((tag) => (
           <span
             key={tag}
-            className="rounded-full border border-white/10 px-2 py-0.5 text-[10px] font-medium text-white/40"
+            className="rounded-full border border-archive-border px-2 py-0.5 text-[10px] font-medium text-archive-muted"
           >
             {tag}
           </span>

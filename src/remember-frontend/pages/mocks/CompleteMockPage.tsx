@@ -1,37 +1,50 @@
 import { Link } from "react-router-dom";
-import { ChevronLeft, Check } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import { ProjectSessionHeader } from "../../components/project/ProjectSessionHeader";
 import { RepoSubmittedPanel } from "../../components/project/RepoSubmittedPanel";
 import { EventTimeline } from "../../components/project/EventTimeline";
 import { SafetyContextPanel } from "../../components/project/SafetyContextPanel";
 import { ProjectProfilePanel } from "../../components/project/ProjectProfilePanel";
 import { LivePreviewPanel } from "../../components/project/LivePreviewPanel";
-import { COMPLETE_MOCK_DETAIL, COMPLETE_MOCK_PROJECT } from "../../data/completeMock";
+import { ResurrectionSummary } from "../../components/project/ResurrectionSummary";
+import {
+  COMPLETE_MOCK_DETAIL,
+  COMPLETE_MOCK_MANIFEST,
+  COMPLETE_MOCK_PROJECT,
+} from "../../data/completeMock";
+import { previewUrlForProject } from "../../lib/preview-url";
+import { WorkspaceIframeGuard } from "../../components/WorkspaceIframeGuard";
 import { useProjectPageAnimations } from "../../hooks/useProjectPageAnimations";
-import { formatElapsed } from "../../data/projectDetail";
 
 export function CompleteMockPage() {
   const rootRef = useProjectPageAnimations("mock-complete");
   const project = COMPLETE_MOCK_PROJECT;
   const detail = COMPLETE_MOCK_DETAIL;
+  const manifest = COMPLETE_MOCK_MANIFEST;
 
   return (
-    <div ref={rootRef} className="flex h-screen flex-col overflow-hidden bg-[#0a0a0a] text-white">
+    <WorkspaceIframeGuard>
+    <div
+      ref={rootRef}
+      className="mesh-bg flex h-screen flex-col overflow-hidden text-archive-ink"
+    >
       <ProjectSessionHeader
         sessionId={detail.sessionId}
-        isLive={false}
+        statusLabel="Project resurrected"
+        statusTone="success"
         projectLabel={`${project.owner}/${project.name}`}
+        showPause={false}
       />
 
       <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
         <aside
           data-animate="project-col"
           data-side="left"
-          className="hidden w-72 shrink-0 flex-col border-r border-white/10 bg-[#0a0a0a] lg:flex xl:w-80"
+          className="order-2 hidden w-72 shrink-0 flex-col border-r border-archive-border lg:order-none lg:flex xl:w-80"
         >
           <Link
             to="/create"
-            className="flex items-center gap-1.5 border-b border-white/10 px-4 py-2.5 text-xs text-white/40 transition-colors hover:text-white/70"
+            className="flex items-center gap-1.5 border-b border-archive-border px-4 py-2.5 text-xs text-archive-muted transition-colors hover:text-archive-ink"
           >
             <ChevronLeft className="h-3.5 w-3.5" />
             Back to discover
@@ -43,45 +56,30 @@ export function CompleteMockPage() {
         <section
           data-animate="project-col"
           data-side="center"
-          className="min-h-0 min-w-0 flex-1"
+          className="order-1 min-h-0 min-w-0 flex-1 lg:order-none"
         >
           <LivePreviewPanel
             owner={project.owner}
             name={project.name}
-            previewUrl={project.previewUrl!}
+            previewUrl={previewUrlForProject(project.previewUrl)}
           />
         </section>
 
         <aside
           data-animate="project-col"
           data-side="right"
-          className="hidden w-64 shrink-0 flex-col border-l border-white/10 bg-[#0a0a0a] lg:flex xl:w-72"
+          className="order-3 hidden w-72 shrink-0 flex-col border-l border-archive-border xl:order-none xl:flex"
         >
           <SafetyContextPanel checks={detail.safetyChecks} />
           <ProjectProfilePanel profile={detail.profile} />
-
-          <div className="border-t border-white/10 p-4 sm:p-5">
-            <p className="text-[10px] font-medium text-white/40">Repair summary</p>
-            <p className="mt-2 text-sm leading-relaxed text-white/60">
-              Environment lane won the repair race in {formatElapsed(detail.elapsedSeconds)}.
-            </p>
-            <ul className="mt-4 space-y-2">
-              {detail.repairLanes.map((lane) => (
-                <li
-                  key={lane.id}
-                  className="flex items-center justify-between rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-xs"
-                >
-                  <span className="text-white/70">{lane.title}</span>
-                  <span className="flex items-center gap-1 text-emerald-400/90">
-                    <Check className="h-3 w-3" />
-                    {lane.statusLabel}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
+          <ResurrectionSummary
+            manifest={manifest}
+            owner={project.owner}
+            name={project.name}
+          />
         </aside>
       </div>
     </div>
+    </WorkspaceIframeGuard>
   );
 }

@@ -152,7 +152,7 @@ function RunWorkspace({ onReset, run }: { onReset: () => void; run: Resurrection
 
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-[#0a0a0a] text-white">
-      <ProjectSessionHeader isLive projectLabel={`${project.owner}/${project.name}`} sessionId={detail.sessionId} />
+      <ProjectSessionHeader statusLabel="Resurrecting" statusTone="progress" projectLabel={`${project.owner}/${project.name}`} sessionId={detail.sessionId} />
       <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
         <aside className="flex w-full shrink-0 flex-col border-b border-white/10 bg-[#0a0a0a] lg:w-72 lg:border-b-0 lg:border-r xl:w-80">
           <ResetControl onReset={onReset} />
@@ -175,7 +175,7 @@ function SuccessWorkspace({ onReset, project }: { onReset: () => void; project: 
   if (!project.previewUrl) return <UnavailableWorkspace onReset={onReset} project={project} />;
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-[#0a0a0a] text-white">
-      <ProjectSessionHeader isLive={false} projectLabel={`${project.owner}/${project.name}`} sessionId={project.id.slice(-8)} />
+      <ProjectSessionHeader statusLabel="Project resurrected" statusTone="success" showPause={false} projectLabel={`${project.owner}/${project.name}`} sessionId={project.id.slice(-8)} />
       <div className="min-h-0 flex-1"><LivePreviewPanel name={project.name} owner={project.owner} previewUrl={project.previewUrl} /></div>
     </div>
   );
@@ -184,7 +184,7 @@ function SuccessWorkspace({ onReset, project }: { onReset: () => void; project: 
 function UnavailableWorkspace({ onReset, project }: { onReset: () => void; project: Project }): ReactElement {
   return (
     <div className="flex min-h-screen flex-col bg-[#0a0a0a] text-white">
-      <ProjectSessionHeader isLive={false} projectLabel={`${project.owner}/${project.name}`} sessionId={project.id.slice(-8)} />
+      <ProjectSessionHeader statusLabel="Project resurrected" statusTone="success" showPause={false} projectLabel={`${project.owner}/${project.name}`} sessionId={project.id.slice(-8)} />
       <div className="flex flex-1 flex-col items-center justify-center px-5 text-center">
         <p className="text-xs text-emerald-400/80">Resurrection complete</p>
         <h1 className="mt-3 text-2xl font-semibold">{project.owner}/{project.name}</h1>
@@ -198,7 +198,7 @@ function UnavailableWorkspace({ onReset, project }: { onReset: () => void; proje
 function FailureWorkspace({ onReset, run }: { onReset: () => void; run: ResurrectionRun }): ReactElement {
   return (
     <div className="flex min-h-screen flex-col bg-[#0a0a0a] text-white">
-      <ProjectSessionHeader isLive={false} projectLabel={`${run.repoOwner}/${run.repoName}`} sessionId={run.id.slice(-8)} />
+      <ProjectSessionHeader statusLabel="Resurrection failed" statusTone="idle" showPause={false} projectLabel={`${run.repoOwner}/${run.repoName}`} sessionId={run.id.slice(-8)} />
       <div className="flex flex-1 flex-col items-center justify-center px-5 text-center">
         <p className="text-xs text-red-400/80">Resurrection failed</p>
         <h1 className="mt-3 text-2xl font-semibold">We could not verify a live preview.</h1>
@@ -239,12 +239,17 @@ const toProjectDetail = (run: ResurrectionRun, project: Project): ProjectDetail 
   };
 };
 
+const LANE_LETTERS = ["A", "B", "C"] as const;
+const INVASIVENESS: RepairLane["invasiveness"][] = ["environment", "config", "dependency"];
+
 const toRepairLane = (attempt: RunAttempt, index: number): RepairLane => ({
   accent: ACCENTS[index % ACCENTS.length],
   changedFiles: attempt.changedFiles,
   footerStatus: attempt.failureReason ?? attempt.status,
   hypothesis: attempt.hypothesis,
   id: attempt.id,
+  invasiveness: INVASIVENESS[index % INVASIVENESS.length],
+  laneLetter: LANE_LETTERS[index % LANE_LETTERS.length],
   status: attempt.status === "success" ? "passed" : attempt.status === "running" ? "repairing" : attempt.status === "queued" ? "pending" : "failed",
   statusLabel: attempt.status,
   title: attempt.title,

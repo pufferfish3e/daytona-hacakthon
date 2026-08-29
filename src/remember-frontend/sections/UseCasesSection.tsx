@@ -26,15 +26,18 @@ export function UseCasesSection() {
   return (
     <section id="use-cases" className="border-t border-white/10 bg-[#0a0a0a] px-5 py-20 sm:px-8 sm:py-28 lg:px-12">
       <div className="mx-auto max-w-6xl">
-        <SectionLabel>Use cases</SectionLabel>
-        <h2 className="mt-4 max-w-2xl text-3xl font-semibold leading-[1.1] tracking-tight text-white sm:text-4xl">
-          For anyone tired of explaining a product through screenshots
-        </h2>
+        <div data-animate="section">
+          <SectionLabel>Use cases</SectionLabel>
+          <h2 className="mt-4 max-w-2xl text-3xl font-semibold leading-[1.1] tracking-tight text-white sm:text-4xl">
+            For anyone tired of explaining a product through screenshots
+          </h2>
+        </div>
 
         <div className="mt-14 grid gap-5 lg:grid-cols-3">
           {USE_CASES.map((item) => (
             <article
               key={item.title}
+              data-animate="card"
               className="flex flex-col rounded-2xl border border-white/10 bg-white/[0.03] p-6 backdrop-blur-sm transition-colors hover:border-white/20"
             >
               <item.icon className="mb-6 h-5 w-5 text-white/50" />

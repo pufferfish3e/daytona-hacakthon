@@ -5,15 +5,17 @@ export function ComparisonSection() {
   return (
     <section className="border-t border-white/10 bg-[#0a0a0a] px-5 py-20 sm:px-8 sm:py-28 lg:px-12">
       <div className="mx-auto max-w-6xl">
-        <SectionLabel>Before & after</SectionLabel>
-        <h2 className="mt-4 max-w-2xl text-3xl font-semibold leading-[1.1] tracking-tight text-white sm:text-4xl">
+        <div data-animate="section">
+          <SectionLabel>Before & after</SectionLabel>
+          <h2 className="mt-4 max-w-2xl text-3xl font-semibold leading-[1.1] tracking-tight text-white sm:text-4xl">
           Screenshots are evidence.
           <br />
           Prototypes are <span className="italic text-white/60">proof</span>.
-        </h2>
+          </h2>
+        </div>
 
-        <div className="mt-14 grid overflow-hidden rounded-2xl border border-white/10 lg:grid-cols-2">
-          <div className="border-b border-white/10 bg-white/[0.02] p-8 lg:border-b-0 lg:border-r">
+        <div data-animate="section" className="mt-14 grid overflow-hidden rounded-2xl border border-white/10 lg:grid-cols-2">
+          <div data-animate="card" className="border-b border-white/10 bg-white/[0.02] p-8 lg:border-b-0 lg:border-r">
             <p
               className="mb-6 text-xs font-medium text-red-400/80"
               style={{ fontFamily: "Geist Mono, ui-monospace, monospace" }}
@@ -47,7 +49,7 @@ export function ComparisonSection() {
             </ul>
           </div>
 
-          <div className="bg-white/[0.04] p-8">
+          <div data-animate="card" className="bg-white/[0.04] p-8">
             <p
               className="mb-6 text-xs font-medium text-emerald-400/80"
               style={{ fontFamily: "Geist Mono, ui-monospace, monospace" }}

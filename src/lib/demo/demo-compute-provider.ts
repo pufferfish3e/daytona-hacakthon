@@ -12,6 +12,7 @@ import type {
   SnapshotRef,
   StartProcessInput,
 } from "@/lib/compute/provider";
+import { resolvePreviewUrl } from "@/lib/server/preview-url";
 
 const DEMO_DELAY_MS = 20;
 const DEMO_COMMIT = "demo-nextjs-commit";
@@ -101,9 +102,9 @@ export class DemoComputeProvider implements ComputeProvider {
     return { stderr: "", stdout: "ready - started server on http://localhost:3000" };
   }
 
-  public async getSignedPreviewUrl(sandbox: SandboxRef, port: number): Promise<string> {
+  public async getSignedPreviewUrl(_sandbox: SandboxRef, port: number): Promise<string> {
     await demoDelay();
-    return `https://demo.invalid/${sandbox.id}:${port}`;
+    return resolvePreviewUrl(port);
   }
 
   public async stop(_sandbox: SandboxRef): Promise<void> {

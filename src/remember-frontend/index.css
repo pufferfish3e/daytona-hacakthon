@@ -3,7 +3,17 @@
 
 @theme {
   --font-sans: "Geist", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, monospace;
   --font-silkscreen: "Silkscreen", cursive;
+
+  --color-archive-bg: var(--archive-bg);
+  --color-archive-bg-deep: var(--archive-bg-deep);
+  --color-archive-panel: var(--archive-bg-panel);
+  --color-archive-ink: var(--archive-ink);
+  --color-archive-muted: var(--archive-muted);
+  --color-archive-faint: var(--archive-faint);
+  --color-archive-border: var(--archive-border);
+  --color-archive-success: var(--archive-success);
 }
 
 body {

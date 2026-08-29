@@ -1,5 +1,8 @@
+import { useNavigate } from "react-router-dom";
 import { RepoUrlInput } from "../components/RepoUrlInput";
 import { PRODUCT_NAME, VIDEO_SRC } from "../constants";
+import { parseGitHubUrl } from "../data/mock";
+import { useProjects } from "../context/ProjectsContext";
 
 function StatsCard() {
   return (
@@ -48,11 +51,25 @@ interface HeroSectionProps {
 }
 
 function HeroRepoInput({ error, onSubmit }: HeroSectionProps) {
-  const handleSubmit = (url: string): void => onSubmit?.(url);
+  const navigate = useNavigate();
+  const { createFromUrl } = useProjects();
+
+  async function handleSubmit(url: string) {
+    if (onSubmit) {
+      onSubmit(url);
+      return;
+    }
+    if (!parseGitHubUrl(url)) {
+      navigate("/create");
+      return;
+    }
+    const project = await createFromUrl(url);
+    if (project) navigate(`/create/generated/${project.id}`);
+  }
 
   return (
-    <div className="mt-6 sm:mt-8">
-      <RepoUrlInput onSubmit={handleSubmit} buttonLabel="Remember this repo" />
+    <div data-animate="hero" className="mt-6 sm:mt-8">
+      <RepoUrlInput onSubmit={(url) => void handleSubmit(url)} buttonLabel="Remember this repo" />
       {error && <p className="mt-3 text-sm text-red-400">{error}</p>}
     </div>
   );
@@ -73,10 +90,16 @@ export function HeroSection({ error, onSubmit }: HeroSectionProps) {
       <div className="relative z-10 flex min-h-screen flex-col pt-20">
         <main className="mt-auto flex flex-col gap-6 px-5 pb-8 sm:gap-8 sm:px-8 sm:pb-12 lg:flex-row lg:items-end lg:justify-between lg:px-12 lg:pb-16">
           <div className="max-w-xl">
-            <h1 className="text-3xl font-semibold leading-[1.1] tracking-tight text-[#010101] sm:text-4xl lg:text-[3.5rem] lg:text-white">
+            <h1
+              data-animate="hero"
+              className="text-3xl font-semibold leading-[1.1] tracking-tight text-[#010101] sm:text-4xl lg:text-[3.5rem] lg:text-white"
+            >
               Bring dead software <span className="italic">back to life</span>
             </h1>
-            <p className="mt-4 max-w-lg text-sm leading-relaxed text-[#010101]/70 sm:text-base lg:text-white/70">
+            <p
+              data-animate="hero"
+              className="mt-4 max-w-lg text-sm leading-relaxed text-[#010101]/70 sm:text-base lg:text-white/70"
+            >
               We archive software with screenshots and dead links — even though software is meant
               to be experienced. {PRODUCT_NAME} rebuilds dormant repos in isolated sandboxes and
               turns them into prototypes anyone can use.
@@ -85,8 +108,12 @@ export function HeroSection({ error, onSubmit }: HeroSectionProps) {
           </div>
 
           <div className="flex flex-col gap-4 sm:flex-row sm:gap-4 lg:gap-4">
-            <StatsCard />
-            <TestimonialCard />
+            <div data-animate="hero">
+              <StatsCard />
+            </div>
+            <div data-animate="hero">
+              <TestimonialCard />
+            </div>
           </div>
         </main>
       </div>

@@ -7,7 +7,7 @@ export function CtaSection() {
       id="early-access"
       className="border-t border-white/10 bg-[#0a0a0a] px-5 py-24 sm:px-8 sm:py-32 lg:px-12"
     >
-      <div className="mx-auto max-w-3xl text-center">
+      <div data-animate="section" className="mx-auto max-w-3xl text-center">
         <SectionLabel className="text-center">Early access</SectionLabel>
         <h2 className="mt-4 text-3xl font-semibold leading-[1.1] tracking-tight text-white sm:text-4xl lg:text-5xl">
           Your archive has a pulse.
