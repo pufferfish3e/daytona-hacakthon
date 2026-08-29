@@ -2,6 +2,7 @@ import { CreateRunRequestSchema } from "@/lib/contracts/api";
 import { errorMessage } from "@/lib/contracts/validation";
 import { InvalidRepositoryUrlError } from "@/lib/github/parse-url";
 import { createRun, type CreateRunDependencies } from "@/lib/jobs/start-run";
+import { getDemoRunService } from "@/lib/demo/demo-run-service";
 
 export const createPostRunHandler = (dependencies?: CreateRunDependencies) => async (request: Request): Promise<Response> => {
   if (!dependencies) return Response.json({ error: "Resurrection service is not configured." }, { status: 503 });
@@ -16,7 +17,7 @@ export const createPostRunHandler = (dependencies?: CreateRunDependencies) => as
   }
 };
 
-export const POST = createPostRunHandler();
+export const POST = createPostRunHandler(getDemoRunService());
 
 const parseRequestBody = async (request: Request): Promise<{ success: true; data: { repoUrl: string } } | { success: false; error: string }> => {
   try {
