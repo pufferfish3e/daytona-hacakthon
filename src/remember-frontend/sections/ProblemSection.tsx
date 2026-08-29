@@ -11,7 +11,7 @@ export function ProblemSection() {
   return (
     <section
       id="how-it-works"
-      className="border-t border-white/10 bg-[#0a0a0a] px-5 py-20 sm:px-8 sm:py-28 lg:px-12"
+      className="glass-section px-5 py-20 sm:px-8 sm:py-28 lg:px-12"
     >
       <div className="mx-auto max-w-6xl">
         <div data-animate="section" className="grid gap-12 lg:grid-cols-2 lg:gap-20 lg:items-end">

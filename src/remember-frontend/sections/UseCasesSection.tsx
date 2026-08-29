@@ -24,7 +24,7 @@ const USE_CASES = [
 
 export function UseCasesSection() {
   return (
-    <section id="use-cases" className="border-t border-white/10 bg-[#0a0a0a] px-5 py-20 sm:px-8 sm:py-28 lg:px-12">
+    <section id="use-cases" className="glass-section px-5 py-20 sm:px-8 sm:py-28 lg:px-12">
       <div className="mx-auto max-w-6xl">
         <div data-animate="section">
           <SectionLabel>Use cases</SectionLabel>
@@ -38,7 +38,7 @@ export function UseCasesSection() {
             <article
               key={item.title}
               data-animate="card"
-              className="flex flex-col rounded-2xl border border-white/10 bg-white/[0.03] p-6 backdrop-blur-sm transition-colors hover:border-white/20"
+              className="archive-plate flex flex-col p-6 transition-colors"
             >
               <item.icon className="mb-6 h-5 w-5 text-white/50" />
               <p

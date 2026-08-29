@@ -1,5 +1,5 @@
-import { RevivedAppMock } from "../../components/project/RevivedAppMock";
+import { BonkyInuApp } from "../../bonky-inu/BonkyInuApp";
 
 export function EmbedPreviewPage() {
-  return <RevivedAppMock />;
+  return <BonkyInuApp forceEmbedded />;
 }

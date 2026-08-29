@@ -13,14 +13,16 @@ export default function App() {
   return (
     <BrowserRouter>
       <ProjectsProvider>
-        <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/create" element={<CreatePage />} />
-          <Route path="/create/generated" element={<ProjectListPage />} />
-          <Route path="/create/generated/:projectId" element={<GeneratedWorkspacePage />} />
-          <Route path="/mocks/complete" element={<CompleteMockPage />} />
-          <Route path="/embed/preview" element={<EmbedPreviewPage />} />
-        </Routes>
+        <div className="flex min-h-full flex-1 flex-col">
+          <Routes>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/create" element={<CreatePage />} />
+            <Route path="/create/generated" element={<ProjectListPage />} />
+            <Route path="/create/generated/:projectId" element={<GeneratedWorkspacePage />} />
+            <Route path="/mocks/complete" element={<CompleteMockPage />} />
+            <Route path="/embed/preview" element={<EmbedPreviewPage />} />
+          </Routes>
+        </div>
       </ProjectsProvider>
     </BrowserRouter>
   );

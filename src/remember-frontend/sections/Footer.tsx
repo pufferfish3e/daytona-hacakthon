@@ -10,7 +10,7 @@ const FOOTER_LINKS = [
 
 export function Footer() {
   return (
-    <footer className="border-t border-white/10 bg-[#050505] px-5 py-12 sm:px-8 lg:px-12">
+    <footer className="glass-section px-5 py-12 sm:px-8 lg:px-12">
       <div className="mx-auto flex max-w-6xl flex-col gap-10 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <div className="flex items-center gap-2">

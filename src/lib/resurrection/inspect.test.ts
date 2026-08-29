@@ -43,7 +43,7 @@ describe("collectRepoEvidence", () => {
       repoRoot: "workspace/repo", sandbox: { id: "seed", name: "seed" },
     });
 
-    expect(result.rootFiles).toEqual(["README.md", "package.json"]);
+    expect(result.rootFiles).toEqual(["package.json", "README.md"]);
     expect(provider.reads).toEqual(["workspace/repo/package.json"]);
   });
 });

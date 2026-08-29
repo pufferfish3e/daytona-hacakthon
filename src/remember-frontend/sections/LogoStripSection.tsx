@@ -15,7 +15,7 @@ export function LogoStripSection() {
   return (
     <section
       data-animate="section"
-      className="border-t border-white/10 bg-[#0a0a0a] px-5 py-12 sm:px-8 lg:px-12"
+      className="glass-section px-5 py-12 sm:px-8 lg:px-12"
     >
       <div className="mx-auto max-w-6xl">
         <SectionLabel className="text-center">

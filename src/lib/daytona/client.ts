@@ -21,11 +21,22 @@ export interface DaytonaSandboxClient {
 
 export interface DaytonaClient {
   createSandbox(input: DaytonaSandboxCreateInput): Promise<DaytonaSandboxClient>;
+  createSandboxFromSnapshot(input: DaytonaSandboxFromSnapshotInput): Promise<DaytonaSandboxClient>;
   deleteSnapshot(name: string): Promise<void>;
 }
 
 export interface DaytonaSandboxCreateInput {
   name: string;
+  cpu: number;
+  memoryGiB: number;
+  diskGiB: number;
+  ttlMinutes: number;
+  labels: Record<string, string>;
+}
+
+export interface DaytonaSandboxFromSnapshotInput {
+  name: string;
+  snapshot: string;
   cpu: number;
   memoryGiB: number;
   diskGiB: number;
@@ -62,6 +73,7 @@ const SANDBOX_IMAGE = "node:20-bookworm";
 const CLONE_DEPTH = 1;
 const SNAPSHOT_TIMEOUT_SECONDS = 60;
 const FORK_TIMEOUT_SECONDS = 60;
+const CREATE_FROM_SNAPSHOT_TIMEOUT_SECONDS = 120;
 const SESSION_COMMAND_TIMEOUT_SECONDS = 30;
 const PREVIEW_URL_TTL_SECONDS = 3_600;
 const STOP_TIMEOUT_SECONDS = 60;
@@ -82,6 +94,17 @@ class DaytonaSdkClient implements DaytonaClient {
       resources: { cpu: input.cpu, disk: input.diskGiB, memory: input.memoryGiB },
       ttlMinutes: input.ttlMinutes,
     });
+    return new DaytonaSdkSandboxClient(sandbox);
+  }
+
+  public async createSandboxFromSnapshot(input: DaytonaSandboxFromSnapshotInput): Promise<DaytonaSandboxClient> {
+    const sandbox = await this.daytona.create({
+      labels: input.labels,
+      language: SANDBOX_LANGUAGE,
+      name: input.name,
+      snapshot: input.snapshot,
+      ttlMinutes: input.ttlMinutes,
+    }, { timeout: CREATE_FROM_SNAPSHOT_TIMEOUT_SECONDS });
     return new DaytonaSdkSandboxClient(sandbox);
   }
 

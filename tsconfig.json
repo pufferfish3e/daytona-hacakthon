@@ -30,5 +30,5 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts"
   ],
-  "exclude": ["node_modules", "remember-vite-backup-20260829", "**/*.test.ts"]
+  "exclude": ["node_modules", "remember-vite-backup-20260829", "demo/**", "**/*.test.ts"]
 }

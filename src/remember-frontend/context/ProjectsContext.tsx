@@ -10,6 +10,12 @@ import {
 import type { ResurrectionRun } from "@/lib/contracts/run";
 import { parseGitHubUrl } from "../data/mock";
 import {
+  createHeroDemoProject,
+  ensureHeroProjectLast,
+  HERO_DEMO_PROJECT_ID,
+  isHeroSpecimenEnabled,
+} from "../lib/demo-presentation";
+import {
   createResurrectionRun,
   fetchResurrectionRun,
   ResurrectionApiError,
@@ -41,6 +47,7 @@ type ProjectsContextValue = {
     language: string,
     thumbnailHue?: number,
   ) => Promise<Project>;
+  openPreparedDemoProject: () => Project;
   getProject: (id: string) => Project | undefined;
   getRun: (id: string) => ResurrectionRun | undefined;
   refreshRun: (id: string) => Promise<void>;
@@ -48,18 +55,38 @@ type ProjectsContextValue = {
 
 const ProjectsContext = createContext<ProjectsContextValue | null>(null);
 
+const isStaleInfrastructureProject = (project: unknown): boolean =>
+  typeof project === "object" &&
+  project !== null &&
+  (project as { presentationMode?: string }).presentationMode === "infrastructure";
+
 function loadProjects(): Project[] {
+  if (typeof window === "undefined") {
+    return isHeroSpecimenEnabled() ? [createHeroDemoProject()] : [];
+  }
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw) as Project[];
+    if (raw) {
+      const parsed = (JSON.parse(raw) as Project[]).filter(
+        (project) => !isStaleInfrastructureProject(project),
+      );
+      return isHeroSpecimenEnabled() ? ensureHeroProjectLast(parsed) : parsed;
+    }
   } catch {
     /* ignore */
   }
-  return [];
+  return isHeroSpecimenEnabled() ? [createHeroDemoProject()] : [];
 }
 
 function persistProjects(projects: Project[]) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
+  if (typeof window === "undefined") return;
+  const withoutStaleInfra = projects.filter(
+    (project) => !isStaleInfrastructureProject(project),
+  );
+  const next = isHeroSpecimenEnabled()
+    ? ensureHeroProjectLast(withoutStaleInfra)
+    : withoutStaleInfra;
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
 }
 
 function mergeProject(existing: Project | undefined, next: Project): Project {
@@ -120,6 +147,7 @@ export function ProjectsProvider({ children }: { children: ReactNode }) {
     async (url: string, language = "Unknown", thumbnailHue?: number) => {
       const parsed = parseGitHubUrl(url);
       if (!parsed) return null;
+
       try {
         return await startRun(parsed.url, { language, thumbnailHue });
       } catch (error: unknown) {
@@ -133,6 +161,7 @@ export function ProjectsProvider({ children }: { children: ReactNode }) {
   const createFromRepo = useCallback(
     async (owner: string, name: string, language: string, thumbnailHue?: number) => {
       const url = `https://github.com/${owner}/${name}`;
+
       try {
         return await startRun(url, { language, thumbnailHue });
       } catch (error: unknown) {
@@ -143,11 +172,33 @@ export function ProjectsProvider({ children }: { children: ReactNode }) {
     [startRun],
   );
 
-  const getProject = useCallback((id: string) => projects.find((project) => project.id === id), [projects]);
+  const openPreparedDemoProject = useCallback((): Project => {
+    const hero = createHeroDemoProject();
+    setProjects((prev) => {
+      const hasHero = prev.some((project) => project.id === hero.id);
+      return ensureHeroProjectLast(hasHero ? prev : [...prev, hero]);
+    });
+    return hero;
+  }, []);
+
+  const getProject = useCallback(
+    (id: string) => {
+      const found = projects.find((project) => project.id === id);
+      if (found) return found;
+      if (id === HERO_DEMO_PROJECT_ID) {
+        return createHeroDemoProject();
+      }
+      return undefined;
+    },
+    [projects],
+  );
   const getRun = useCallback((id: string) => runs[id], [runs]);
 
   useEffect(() => {
-    const active = projects.filter((project) => !["live", "failed"].includes(project.status));
+    const active = projects.filter(
+      (project) =>
+        !["live", "failed"].includes(project.status) && !project.presentationMode,
+    );
     if (active.length === 0) return;
 
     const poll = async () => {
@@ -189,6 +240,7 @@ export function ProjectsProvider({ children }: { children: ReactNode }) {
       );
     };
     void restore();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- restore persisted runs once on mount
   }, []);
 
   const value = useMemo(
@@ -199,11 +251,12 @@ export function ProjectsProvider({ children }: { children: ReactNode }) {
       clearApiError,
       createFromUrl,
       createFromRepo,
+      openPreparedDemoProject,
       getProject,
       getRun,
       refreshRun,
     }),
-    [projects, runs, apiError, clearApiError, createFromUrl, createFromRepo, getProject, getRun, refreshRun],
+    [projects, runs, apiError, clearApiError, createFromUrl, createFromRepo, openPreparedDemoProject, getProject, getRun, refreshRun],
   );
 
   return <ProjectsContext.Provider value={value}>{children}</ProjectsContext.Provider>;

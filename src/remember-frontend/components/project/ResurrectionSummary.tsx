@@ -13,30 +13,30 @@ export function ResurrectionSummary({ manifest, owner, name }: ResurrectionSumma
       <p className="accession-label">What we reconstructed</p>
 
       <div className="mt-4 grid grid-cols-2 gap-3">
-        <div className="specimen-card rounded-lg p-3">
+        <div className="specimen-card p-3">
           <p className="text-[10px] text-archive-muted">Framework</p>
           <p className="mt-1 text-sm font-medium text-archive-ink">{manifest.framework}</p>
         </div>
-        <div className="specimen-card rounded-lg p-3">
+        <div className="specimen-card p-3">
           <p className="text-[10px] text-archive-muted">Runtime</p>
           <p className="mt-1 text-sm font-medium text-archive-ink">{manifest.runtime}</p>
         </div>
-        <div className="specimen-card rounded-lg p-3">
+        <div className="specimen-card p-3">
           <p className="text-[10px] text-archive-muted">Package manager</p>
           <p className="mt-1 text-sm font-medium text-archive-ink">{manifest.packageManager}</p>
         </div>
-        <div className="specimen-card rounded-lg p-3">
+        <div className="specimen-card p-3">
           <p className="text-[10px] text-archive-muted">Repair attempts</p>
           <p className="mt-1 text-sm font-medium text-archive-ink">{manifest.repairAttempts}</p>
         </div>
       </div>
 
       <div className="mt-4 space-y-2">
-        <div className="rounded-lg border border-archive-border bg-archive-bg-deep px-3 py-2">
+        <div className="glass-pill rounded-xl px-3 py-2">
           <p className="text-[10px] text-archive-muted">Install</p>
           <p className="mt-0.5 font-mono text-xs text-archive-ink">{manifest.installCommand}</p>
         </div>
-        <div className="rounded-lg border border-archive-border bg-archive-bg-deep px-3 py-2">
+        <div className="glass-pill rounded-xl px-3 py-2">
           <p className="text-[10px] text-archive-muted">Start</p>
           <p className="mt-0.5 font-mono text-xs text-archive-ink">{manifest.startCommand}</p>
         </div>

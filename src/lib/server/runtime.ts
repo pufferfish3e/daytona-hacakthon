@@ -16,12 +16,21 @@ export const getResurrectionServiceState = (
   env: EnvSource = process.env,
 ): ResurrectionServiceState => {
   const config = parseResurrectionEnv(env);
+  if (
+    cachedState !== undefined
+    && cachedState.config.mode === config.mode
+    && cachedState.config.runDirectory === config.runDirectory
+    && cachedState.config.demoModeForced === config.demoModeForced
+  ) {
+    return cachedState;
+  }
   const dependencies = composeResurrectionRunService(config);
-  return {
+  cachedState = {
     config,
     dependencies,
     unavailableMessage: dependencies ? "" : resurrectionUnavailableMessage(config),
   };
+  return cachedState;
 };
 
 export const getResurrectionRunService = (

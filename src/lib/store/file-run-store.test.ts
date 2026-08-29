@@ -31,6 +31,6 @@ describe("FileRunStore", () => {
       store.update(run.id, (current) => ({ ...current, events: [...current.events, event("two")] })),
     ]);
 
-    expect((await store.get(run.id))?.events.map((item) => item.summary).sort()).toEqual(["one", "two"]);
+    expect((await store.get(run.id))?.events.map((item) => item.summary).sort()).toEqual(["Run queued.", "one", "two"]);
   });
 });

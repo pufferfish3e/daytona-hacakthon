@@ -3,7 +3,7 @@ import { PRODUCT_NAME } from "../constants";
 
 export function ComparisonSection() {
   return (
-    <section className="border-t border-white/10 bg-[#0a0a0a] px-5 py-20 sm:px-8 sm:py-28 lg:px-12">
+    <section className="glass-section px-5 py-20 sm:px-8 sm:py-28 lg:px-12">
       <div className="mx-auto max-w-6xl">
         <div data-animate="section">
           <SectionLabel>Before & after</SectionLabel>
@@ -14,15 +14,15 @@ export function ComparisonSection() {
           </h2>
         </div>
 
-        <div data-animate="section" className="mt-14 grid overflow-hidden rounded-2xl border border-white/10 lg:grid-cols-2">
-          <div data-animate="card" className="border-b border-white/10 bg-white/[0.02] p-8 lg:border-b-0 lg:border-r">
+        <div data-animate="section" className="glass-panel-strong mt-14 grid overflow-hidden lg:grid-cols-2">
+          <div data-animate="card" className="border-b border-white/10 p-8 lg:border-b-0 lg:border-r lg:border-white/10">
             <p
               className="mb-6 text-xs font-medium text-red-400/80"
               style={{ fontFamily: "Geist Mono, ui-monospace, monospace" }}
             >
               How we archive today
             </p>
-            <div className="relative aspect-video overflow-hidden rounded-xl border border-white/10 bg-[#111]">
+            <div className="glass-panel relative aspect-video overflow-hidden">
               <img
                 src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&q=80"
                 alt="Broken archive — static screenshot with expired link"
@@ -49,14 +49,14 @@ export function ComparisonSection() {
             </ul>
           </div>
 
-          <div data-animate="card" className="bg-white/[0.04] p-8">
+          <div data-animate="card" className="border-l border-emerald-500/25 p-8">
             <p
               className="mb-6 text-xs font-medium text-emerald-400/80"
               style={{ fontFamily: "Geist Mono, ui-monospace, monospace" }}
             >
               What {PRODUCT_NAME} delivers
             </p>
-            <div className="relative aspect-video overflow-hidden rounded-xl border border-emerald-500/20 bg-[#111]">
+            <div className="glass-panel relative aspect-video overflow-hidden border-emerald-500/20">
               <img
                 src="https://images.unsplash.com/photo-1461742480684-dccba630e2f6?w=800&q=80"
                 alt="Live interactive prototype running in sandbox"

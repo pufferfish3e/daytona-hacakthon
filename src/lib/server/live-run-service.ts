@@ -1,6 +1,8 @@
 import type { CreateRunDependencies } from "@/lib/jobs/start-run";
-import { getProductionRunService } from "@/lib/server/production-run-service";
+import { composeProductionRunService } from "@/lib/server/production-run-service";
 import type { ResurrectionEnv } from "./env";
 
-export const composeLiveRunService = (_config: ResurrectionEnv): CreateRunDependencies | undefined =>
-  getProductionRunService();
+export const composeLiveRunService = (config: ResurrectionEnv): CreateRunDependencies | undefined => {
+  if (config.mode !== "live") return undefined;
+  return composeProductionRunService(config.runDirectory);
+};

@@ -43,6 +43,15 @@ interface ResurrectionRun {
   repoOwner: string;
   repoUrl: string;
   status: RunStatus;
+  visualProof?: VisualProofResult;
+}
+
+interface VisualProofResult {
+  evidenceUrl?: string;
+  label?: "blank" | "error_overlay" | "meaningful_ui";
+  provider: "nosana";
+  status: "failed" | "passed" | "unavailable";
+  summary: string;
 }
 
 interface CreateRunResponse {
@@ -71,6 +80,12 @@ const isCreateResponse = (input: unknown): input is CreateRunResponse =>
 
 const isRunResponse = (input: unknown): input is ResurrectionRun =>
   typeof input === "object" && input !== null && "status" in input && "attempts" in input && "events" in input && typeof input.status === "string" && Array.isArray(input.attempts) && Array.isArray(input.events);
+
+const VISUAL_PROOF_LABELS: Record<NonNullable<VisualProofResult["label"]>, string> = {
+  blank: "Blank screen",
+  error_overlay: "Error overlay",
+  meaningful_ui: "Meaningful UI",
+};
 
 const getErrorMessage = async (response: Response): Promise<string> => {
   const payload: unknown = await response.json().catch((): null => null);
@@ -147,7 +162,7 @@ function RunWorkspace({ onReset, run }: { onReset: () => void; run: Resurrection
   const project = useMemo((): Project => toProject(run), [run]);
   const detail = useMemo((): ProjectDetail => toProjectDetail(run, project), [project, run]);
 
-  if (run.status === "success") return <SuccessWorkspace onReset={onReset} project={project} />;
+  if (run.status === "success") return <SuccessWorkspace onReset={onReset} project={project} run={run} />;
   if (run.status === "failed") return <FailureWorkspace onReset={onReset} run={run} />;
 
   return (
@@ -171,12 +186,27 @@ function RunWorkspace({ onReset, run }: { onReset: () => void; run: Resurrection
   );
 }
 
-function SuccessWorkspace({ onReset, project }: { onReset: () => void; project: Project }): ReactElement {
+function SuccessWorkspace({ onReset, project, run }: { onReset: () => void; project: Project; run: ResurrectionRun }): ReactElement {
   if (!project.previewUrl) return <UnavailableWorkspace onReset={onReset} project={project} />;
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-[#0a0a0a] text-white">
       <ProjectSessionHeader statusLabel="Project resurrected" statusTone="success" showPause={false} projectLabel={`${project.owner}/${project.name}`} sessionId={project.id.slice(-8)} />
+      {run.visualProof ? <VisualProofBanner proof={run.visualProof} /> : null}
       <div className="min-h-0 flex-1"><LivePreviewPanel name={project.name} owner={project.owner} previewUrl={project.previewUrl} /></div>
+    </div>
+  );
+}
+
+function VisualProofBanner({ proof }: { proof: VisualProofResult }): ReactElement {
+  const tone = proof.status === "passed" ? "text-emerald-400/90" : proof.status === "failed" ? "text-amber-400/90" : "text-white/50";
+  const label = proof.label ? VISUAL_PROOF_LABELS[proof.label] : undefined;
+  return (
+    <div className="border-b border-white/10 px-5 py-3 text-sm">
+      <p className={tone}>
+        GPU visual proof: {proof.status}
+        {label ? ` · ${label}` : ""}
+      </p>
+      <p className="mt-1 text-xs text-white/45">{proof.summary}</p>
     </div>
   );
 }

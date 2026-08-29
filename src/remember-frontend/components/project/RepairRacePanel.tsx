@@ -43,7 +43,7 @@ function RepairLaneCard({ lane }: { lane: RepairLane }) {
     <article
       data-animate="repair-lane"
       data-testid="repair-attempt"
-      className={`specimen-card flex flex-col rounded-xl p-4 transition-all ${
+      className={`specimen-card flex flex-col p-4 transition-all ${
         isWinner ? "ring-2 ring-archive-success/30" : ""
       } ${isFailed ? "opacity-60" : ""}`}
     >
@@ -117,7 +117,7 @@ export function RepairRacePanel({
         <div className="flex flex-col items-center">
           <div
             data-animate="snapshot"
-            className="specimen-card w-full max-w-xs rounded-xl p-4 text-center"
+            className="specimen-card w-full max-w-xs p-4 text-center"
           >
             <p className="accession-label">Clean snapshot S0</p>
             <p className="mt-1 font-mono text-sm text-archive-ink">commit {snapshotHash}</p>

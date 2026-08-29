@@ -5,7 +5,7 @@ export function CtaSection() {
   return (
     <section
       id="early-access"
-      className="border-t border-white/10 bg-[#0a0a0a] px-5 py-24 sm:px-8 sm:py-32 lg:px-12"
+      className="glass-section px-5 py-24 sm:px-8 sm:py-32 lg:px-12"
     >
       <div data-animate="section" className="mx-auto max-w-3xl text-center">
         <SectionLabel className="text-center">Early access</SectionLabel>

@@ -14,7 +14,7 @@ export function LandingPage() {
   const rootRef = useLandingPageAnimations();
 
   return (
-    <div ref={rootRef} className="bg-[#0a0a0a] text-white">
+    <div ref={rootRef} className="mesh-bg text-white">
       <Navigation overHero />
       <HeroSection />
       <LogoStripSection />

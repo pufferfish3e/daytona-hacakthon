@@ -23,7 +23,7 @@ function MobileMenu({
       />
 
       <div
-        className={`fixed right-0 top-0 z-40 flex h-full w-72 flex-col bg-black/90 backdrop-blur-xl transition-transform duration-500 md:hidden ${
+        className={`fixed right-0 top-0 z-40 flex h-full w-72 flex-col glass-panel-strong rounded-none border-y-0 border-r-0 transition-transform duration-500 md:hidden ${
           open ? "translate-x-0" : "translate-x-full"
         }`}
         style={{ transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)" }}
@@ -108,9 +108,7 @@ export function Navigation({ overHero = false }: NavigationProps) {
     <>
       <nav
         className={`fixed inset-x-0 top-0 z-50 flex items-center justify-between px-5 py-5 transition-colors duration-300 sm:px-8 sm:py-6 lg:px-12 ${
-          scrolled || !overHero
-            ? "border-b border-white/10 bg-black/70 backdrop-blur-xl"
-            : "bg-transparent"
+          scrolled || !overHero ? "glass-header" : "bg-transparent"
         }`}
       >
         <Link to="/" className="flex items-center gap-2">
@@ -119,7 +117,7 @@ export function Navigation({ overHero = false }: NavigationProps) {
         </Link>
 
         <div className="hidden items-center gap-3 md:flex">
-          <div className="flex items-center rounded-full bg-white/10 px-1.5 py-1.5 backdrop-blur-lg">
+          <div className="glass-nav flex items-center px-1.5 py-1.5">
             {NAV_LINKS.map((link) => (
               <a
                 key={link.href}

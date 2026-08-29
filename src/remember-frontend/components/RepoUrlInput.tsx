@@ -37,9 +37,7 @@ export function RepoUrlInput({
     <form onSubmit={handleSubmit} className={className}>
       <div
         className={`flex w-full max-w-xl flex-col gap-3 sm:flex-row sm:items-center sm:rounded-full sm:p-1.5 ${
-          isArchival
-            ? "sm:border sm:border-archive-border sm:bg-archive-panel sm:shadow-sm"
-            : "sm:bg-white"
+          isArchival ? "glass-input-shell sm:shadow-sm" : "sm:rounded-full sm:bg-white"
         }`}
       >
         <input
@@ -53,7 +51,7 @@ export function RepoUrlInput({
           aria-label="Public GitHub repository"
           className={`w-full rounded-full px-5 py-3 text-sm outline-none sm:flex-1 sm:bg-transparent sm:py-2 ${
             isArchival
-              ? "bg-archive-panel text-archive-ink placeholder:text-archive-faint"
+              ? "rounded-full bg-transparent text-archive-ink placeholder:text-archive-faint"
               : "bg-white text-[#010101] placeholder:text-[#010101]/40"
           }`}
         />

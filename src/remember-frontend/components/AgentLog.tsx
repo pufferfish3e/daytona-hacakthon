@@ -21,7 +21,7 @@ export function AgentLog({ logs, isActive = false }: AgentLogProps) {
   }, [logs.length]);
 
   return (
-    <div className="flex h-full flex-col rounded-2xl border border-white/10 bg-[#050505]">
+    <div className="flex h-full flex-col glass-panel overflow-hidden">
       <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
         <p className="text-xs font-medium text-white/50">
           Agent activity

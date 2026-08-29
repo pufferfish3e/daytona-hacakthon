@@ -15,7 +15,7 @@ export function ProjectProfilePanel({ profile }: { profile: ProjectProfileItem[]
         {profile.map((item) => (
           <li
             key={item.name}
-            className="specimen-card flex items-center justify-between rounded-lg px-3 py-2.5"
+            className="specimen-card flex items-center justify-between px-3 py-2.5"
           >
             <div className="flex items-center gap-2.5">
               <span className="flex h-7 w-7 items-center justify-center rounded-md border border-archive-border bg-archive-bg-deep text-xs text-archive-muted">

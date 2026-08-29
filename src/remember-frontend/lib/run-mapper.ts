@@ -165,7 +165,7 @@ export const projectFromRun = (
   language: extras?.language ?? run.detected?.framework ?? "Unknown",
   thumbnailHue: extras?.thumbnailHue,
   status: mapRunStatusToProjectStatus(run.status),
-  previewUrl: previewUrlForProject(run.previewUrl),
+  previewUrl: run.previewUrl ? previewUrlForProject(run.previewUrl) : undefined,
   logs: run.events.map((event) => ({
     ts: formatClock(event.at) ?? "00:00",
     agent: event.kind === "repairing" ? "repair" : event.kind === "verifying" ? "isolate" : "ingest",

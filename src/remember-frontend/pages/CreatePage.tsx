@@ -8,11 +8,20 @@ import { SectionLabel } from "../components/SectionLabel";
 import { StatusBadge } from "../components/StatusBadge";
 import { RECOMMENDED_REPOS, parseGitHubUrl } from "../data/mock";
 import { useProjects } from "../context/ProjectsContext";
+import {
+  createHeroDemoProject,
+  isHeroSpecimenEnabled,
+  isHeroDemoProject,
+  isPreparedSpecimenRepo,
+  splitHeroFromProjects,
+} from "../lib/demo-presentation";
+import type { Project } from "../types/dashboard";
 import { useCreatePageAnimations } from "../hooks/useCreatePageAnimations";
 
 export function CreatePage() {
   const navigate = useNavigate();
-  const { projects, createFromUrl, createFromRepo, apiError, clearApiError } = useProjects();
+  const { projects, createFromUrl, createFromRepo, openPreparedDemoProject, apiError, clearApiError } =
+    useProjects();
   const [query, setQuery] = useState("");
   const [urlError, setUrlError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -30,6 +39,18 @@ export function CreatePage() {
     );
   }, [query]);
 
+  const { live: liveProjects, hero: preparedHero } = useMemo(() => {
+    const split = splitHeroFromProjects(projects);
+    const hero =
+      split.hero ?? (isHeroSpecimenEnabled() ? createHeroDemoProject() : undefined);
+    return { live: split.live, hero };
+  }, [projects]);
+
+  const recentProjects = useMemo(() => {
+    const recentLive = liveProjects.slice(0, 5);
+    return preparedHero ? [...recentLive, preparedHero] : recentLive;
+  }, [liveProjects, preparedHero]);
+
   async function handleUrlSubmit(url: string) {
     if (!parseGitHubUrl(url)) {
       setUrlError("Enter a valid GitHub URL (e.g. github.com/owner/repo).");
@@ -46,7 +67,17 @@ export function CreatePage() {
     }
   }
 
+  function openPreparedSpecimen() {
+    const project = openPreparedDemoProject();
+    navigate(`/create/generated/${project.id}`);
+  }
+
   async function handleRepoSelect(repo: (typeof RECOMMENDED_REPOS)[0]) {
+    if (isPreparedSpecimenRepo(repo.owner, repo.name)) {
+      openPreparedSpecimen();
+      return;
+    }
+
     clearApiError();
     setIsSubmitting(true);
     try {
@@ -55,6 +86,14 @@ export function CreatePage() {
     } finally {
       setIsSubmitting(false);
     }
+  }
+
+  function handleRecentProjectSelect(project: Project) {
+    if (isHeroDemoProject(project)) {
+      openPreparedSpecimen();
+      return;
+    }
+    navigate(`/create/generated/${project.id}`);
   }
 
   return (
@@ -119,7 +158,7 @@ export function CreatePage() {
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Search repos…"
-                  className="w-full rounded-full border border-white/10 bg-white/[0.04] py-2.5 pl-10 pr-4 text-sm text-archive-ink placeholder:text-archive-faint outline-none backdrop-blur-sm transition-colors focus:border-white/20"
+                  className="glass-input-shell w-full py-2.5 pl-10 pr-4 text-sm text-archive-ink placeholder:text-archive-faint outline-none transition-colors focus:border-white/20"
                 />
               </div>
             </div>
@@ -127,7 +166,11 @@ export function CreatePage() {
             <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {filtered.map((repo) => (
                 <div key={repo.id} data-animate="repo-card">
-                  <RepoCard repo={repo} onSelect={handleRepoSelect} />
+                  <RepoCard
+                    repo={repo}
+                    onSelect={handleRepoSelect}
+                    prepared={isPreparedSpecimenRepo(repo.owner, repo.name)}
+                  />
                 </div>
               ))}
             </div>
@@ -138,22 +181,27 @@ export function CreatePage() {
               </p>
             )}
 
-            {projects.length > 0 && (
+            {(recentProjects.length > 0 || preparedHero) && (
               <div data-animate="recent" className="mt-16 border-t border-archive-border pt-12">
                 <SectionLabel variant="archival">Recently resurrected</SectionLabel>
                 <div className="mt-6 flex gap-4 overflow-x-auto pb-2">
-                  {projects.slice(0, 6).map((project) => (
+                  {recentProjects.map((project) => (
                     <button
                       key={project.id}
                       type="button"
-                      onClick={() => navigate(`/create/generated/${project.id}`)}
-                      className="specimen-card flex min-w-[200px] flex-col rounded-2xl p-4 text-left transition-colors hover:border-archive-border-strong"
+                      onClick={() => handleRecentProjectSelect(project)}
+                      className="specimen-card flex min-w-[200px] flex-col p-4 text-left transition-colors"
                     >
                       <p className="truncate text-sm font-medium text-archive-ink">
                         {project.owner}/{project.name}
                       </p>
-                      <div className="mt-2">
+                      <div className="mt-2 flex flex-wrap items-center gap-2">
                         <StatusBadge status={project.status} variant="archival" />
+                        {isHeroDemoProject(project) && (
+                          <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-emerald-300">
+                            Prepared iframe
+                          </span>
+                        )}
                       </div>
                     </button>
                   ))}

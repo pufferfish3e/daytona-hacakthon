@@ -41,3 +41,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# vendored demo source (install locally if needed)
+demo/bonky-inu-devnet/node_modules
+
