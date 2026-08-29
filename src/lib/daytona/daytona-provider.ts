@@ -12,32 +12,39 @@ import type {
   SnapshotRef,
   StartProcessInput,
 } from "@/lib/compute/provider";
-import { createDaytonaClient, type DaytonaClient, type DaytonaSandboxClient } from "./client";
+import {
+  createDaytonaClient,
+  type DaytonaClient,
+  type DaytonaSandboxClient,
+  type DaytonaSandboxCreateInput,
+} from "./client";
 import { resolveRepositoryPath } from "./path-policy";
 
 const PRODUCT_LABEL = "project-resurrection";
 const SEED_ROLE = "seed";
+const FORK_ROLE = "fork";
 const REPOSITORY_ROOT = "workspace/repo";
 const REPOSITORY_ROOT_PREFIX = `${REPOSITORY_ROOT}/`;
 const UTF8_ENCODING = "utf8";
+
+interface SeedContext {
+  input: CreateSeedInput;
+  snapshotName?: string;
+}
 
 export const createDaytonaProvider = (): DaytonaProvider => new DaytonaProvider(createDaytonaClient());
 
 export class DaytonaProvider implements ComputeProvider {
   private readonly sandboxes = new Map<string, DaytonaSandboxClient>();
+  private readonly seedContext = new Map<string, SeedContext>();
 
   public constructor(private readonly client: DaytonaClient) {}
 
   public async createSeed(input: CreateSeedInput): Promise<SandboxRef> {
-    const sandbox = await this.client.createSandbox({
-      cpu: input.cpu,
-      diskGiB: input.diskGiB,
-      labels: { product: PRODUCT_LABEL, role: SEED_ROLE },
-      memoryGiB: input.memoryGiB,
-      name: input.name,
-      ttlMinutes: input.ttlMinutes,
-    });
-    return this.remember(sandbox);
+    const sandbox = await this.client.createSandbox(this.toCreateInput(input));
+    const ref = this.remember(sandbox);
+    this.seedContext.set(ref.id, { input });
+    return ref;
   }
 
   public async clonePublicRepository(sandbox: SandboxRef, input: CloneInput): Promise<{ commit: string }> {
@@ -48,12 +55,27 @@ export class DaytonaProvider implements ComputeProvider {
 
   public async createSnapshot(sandbox: SandboxRef, name: string): Promise<SnapshotRef> {
     await this.requireSandbox(sandbox).createSnapshot(name);
+    const context = this.seedContext.get(sandbox.id);
+    if (context !== undefined) context.snapshotName = name;
     return { name };
   }
 
   public async fork(sandbox: SandboxRef, name: string): Promise<SandboxRef> {
-    const forkedSandbox = await this.requireSandbox(sandbox).fork(name);
-    return this.remember(forkedSandbox);
+    try {
+      const forkedSandbox = await this.requireSandbox(sandbox).fork(name);
+      return this.remember(forkedSandbox);
+    } catch (error: unknown) {
+      if (!isForkUnsupported(error)) throw error;
+      const context = this.seedContext.get(sandbox.id);
+      if (context?.snapshotName === undefined) throw error;
+      const forkedSandbox = await this.client.createSandboxFromSnapshot({
+        ...this.toCreateInput(context.input),
+        labels: { product: PRODUCT_LABEL, role: FORK_ROLE },
+        name,
+        snapshot: context.snapshotName,
+      });
+      return this.remember(forkedSandbox);
+    }
   }
 
   public async listFiles(sandbox: SandboxRef, path: string, depth: number): Promise<SandboxFile[]> {
@@ -109,6 +131,7 @@ export class DaytonaProvider implements ComputeProvider {
   public async delete(sandbox: SandboxRef): Promise<void> {
     await this.requireSandbox(sandbox).delete();
     this.sandboxes.delete(sandbox.id);
+    this.seedContext.delete(sandbox.id);
   }
 
   public async deleteSnapshot(snapshot: SnapshotRef): Promise<void> {
@@ -125,7 +148,21 @@ export class DaytonaProvider implements ComputeProvider {
     if (daytonaSandbox === undefined) throw new Error(`Daytona sandbox ${sandbox.id} is not managed by this provider.`);
     return daytonaSandbox;
   }
+
+  private toCreateInput(input: CreateSeedInput): DaytonaSandboxCreateInput {
+    return {
+      cpu: input.cpu,
+      diskGiB: input.diskGiB,
+      labels: { product: PRODUCT_LABEL, role: SEED_ROLE },
+      memoryGiB: input.memoryGiB,
+      name: input.name,
+      ttlMinutes: input.ttlMinutes,
+    };
+  }
 }
+
+const isForkUnsupported = (error: unknown): boolean =>
+  error instanceof Error && /forking is not supported/i.test(error.message);
 
 const relativeRepositoryPath = (path: string): string => {
   if (!path.startsWith(REPOSITORY_ROOT_PREFIX)) throw new Error(`Sandbox path is outside ${REPOSITORY_ROOT}.`);

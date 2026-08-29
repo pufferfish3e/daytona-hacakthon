@@ -1,5 +1,6 @@
 export const COMMAND_TIMEOUT_SECONDS = 120;
 export const TOTAL_RUN_TIMEOUT_MS = 8 * 60 * 1_000;
+export const SEED_DISK_GIB = 10;
 export const EVIDENCE_FILE_LIMIT_BYTES = 32 * 1_024;
 export const EVIDENCE_TOTAL_LIMIT_BYTES = 128 * 1_024;
 export const FILE_WRITE_LIMIT_BYTES = 64 * 1_024;

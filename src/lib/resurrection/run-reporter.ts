@@ -5,6 +5,7 @@ import type {
   ResurrectionRun,
   RunEvent,
   RunStatus,
+  VisualProofResult,
 } from "@/lib/contracts/run";
 import type { RunStore } from "@/lib/store/run-store";
 import type { SandboxRef } from "@/lib/compute/provider";
@@ -15,6 +16,7 @@ export interface SuccessfulRunUpdate {
   manifest: ResurrectionManifest;
   previewPort: number;
   previewUrl: string;
+  visualProof?: VisualProofResult;
 }
 
 export class RunReporter implements RepairRaceReporter {
@@ -64,9 +66,13 @@ export class RunReporter implements RepairRaceReporter {
   }
 
   public async completeSuccess(input: SuccessfulRunUpdate): Promise<void> {
-    await this.updateWithEvent("success", "Project startup and HTTP response were independently verified.", (run: ResurrectionRun): ResurrectionRun => ({
+    const summary = input.visualProof === undefined
+      ? "Project startup and HTTP response were independently verified."
+      : `Project startup verified. Visual proof: ${input.visualProof.summary}`;
+    await this.updateWithEvent("success", summary, (run: ResurrectionRun): ResurrectionRun => ({
       ...run, attempts: input.attempts ?? run.attempts, completedAt: this.now().toISOString(), failureReason: undefined,
       manifest: input.manifest, previewPort: input.previewPort, previewUrl: input.previewUrl, status: "success",
+      visualProof: input.visualProof,
     }));
   }
 

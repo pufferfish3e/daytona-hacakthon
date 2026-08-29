@@ -62,7 +62,43 @@ describe("ResurrectionOrchestrator", () => {
     expect(await store.get(runId)).toMatchObject({ previewPort: 3000, previewUrl: "https://preview.test", status: "success" });
     expect(provider.calls).toEqual([
       "createSeed", "clone", "snapshot", "inspect", "fork:seed", "run:baseline:npm ci",
-      "start:baseline:npm run dev", "stop:seed", "deleteSnapshot:s0",
+      "start:baseline:npm run dev", "stop:seed", "delete:seed", "deleteSnapshot:s0",
     ]);
+  });
+
+  it("persists optional visual proof for GUI projects", async () => {
+    const runId = "run_11111111-1111-4111-8111-111111111111";
+    const store = new MemoryRunStore(createQueuedRun(runId, "https://github.com/acme/gui.git", "acme", "gui", "2026-08-29T00:00:00.000Z"));
+    const provider = new OrchestratorProvider();
+    const planner: RepairPlanner = { plan: async () => { throw new Error("planner should not run"); } };
+    const orchestrator = new ResurrectionOrchestrator({
+      now: () => new Date("2026-08-29T00:00:01.000Z"),
+      planner,
+      provider,
+      store,
+      verifier: { verify: async () => ({ httpStatus: 200, isVerified: true, port: 3000, previewUrl: "https://preview.test", processAlive: true }) },
+      verifiedCapabilities: [],
+      visualProof: {
+        assess: async () => ({
+          durationMs: 12,
+          label: "meaningful_ui",
+          provider: "nosana",
+          status: "passed",
+          summary: "Detected a meaningful UI.",
+        }),
+      },
+    });
+
+    await orchestrator.run(runId);
+
+    expect(await store.get(runId)).toMatchObject({
+      status: "success",
+      visualProof: {
+        label: "meaningful_ui",
+        provider: "nosana",
+        status: "passed",
+        summary: "Detected a meaningful UI.",
+      },
+    });
   });
 });

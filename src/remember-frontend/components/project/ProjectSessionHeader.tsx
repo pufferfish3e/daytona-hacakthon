@@ -27,7 +27,7 @@ export function ProjectSessionHeader({
   return (
     <header
       data-animate="project-header"
-      className="flex shrink-0 items-center justify-between border-b border-archive-border bg-[#0a0a0a]/70 px-4 py-3 backdrop-blur-xl sm:px-6"
+      className="glass-header flex shrink-0 items-center justify-between px-4 py-3 sm:px-6"
     >
       <div className="flex items-center gap-4">
         <Link

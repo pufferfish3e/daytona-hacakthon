@@ -2,6 +2,17 @@ import type { LogEntry, Project, RecommendedRepo } from "../types/dashboard";
 
 export const RECOMMENDED_REPOS: RecommendedRepo[] = [
   {
+    id: "rec-bonky",
+    owner: "cryptoloutre",
+    name: "bonky-inu-devnet",
+    language: "TypeScript",
+    lastCommitYear: 2023,
+    tags: ["solana", "game", "legacy"],
+    thumbnailHue: 28,
+    imageUrl:
+      "https://images.pexels.com/photos/163064/play-stone-network-networked-interactive-163064.jpeg?auto=compress&cs=tinysrgb&w=800",
+  },
+  {
     id: "rec-1",
     owner: "mozilla",
     name: "persona",

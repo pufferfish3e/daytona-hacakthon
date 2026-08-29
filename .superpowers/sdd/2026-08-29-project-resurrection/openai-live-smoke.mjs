@@ -2,7 +2,7 @@ import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
 const { loadEnvConfig } = require("@next/env");
-loadEnvConfig("/Users/pufferfish/Desktop/daytona");
+loadEnvConfig(process.cwd());
 
 const { OpenAIRepairPlanner } = await import("../../../src/lib/openai/openai-repair-planner.ts");
 const planner = new OpenAIRepairPlanner();

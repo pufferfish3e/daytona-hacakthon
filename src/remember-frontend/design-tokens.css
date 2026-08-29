@@ -1,5 +1,5 @@
 /**
- * Remember Design System — dark off-black + archival resurrection screens
+ * Remember Design System — dark off-black + subtle glassmorphism
  */
 
 :root {
@@ -13,7 +13,7 @@
   /* Dashboard / resurrection — dark archival */
   --archive-bg: #0a0a0a;
   --archive-bg-deep: #050505;
-  --archive-bg-panel: #111111;
+  --archive-bg-panel: rgb(255 255 255 / 0.04);
   --archive-ink: #fafaf9;
   --archive-muted: rgb(255 255 255 / 0.55);
   --archive-faint: rgb(255 255 255 / 0.32);
@@ -26,25 +26,42 @@
   --archive-warning-bg: rgb(251 191 36 / 0.1);
   --archive-error: #f87171;
   --archive-error-bg: rgb(248 113 113 / 0.1);
-  --archive-specimen-shadow: 0 1px 2px rgb(0 0 0 / 0.2), 0 8px 24px rgb(0 0 0 / 0.35);
+  --archive-specimen-shadow: 0 4px 24px rgb(0 0 0 / 0.28), inset 0 1px 0 rgb(255 255 255 / 0.06);
 
-  /* Mesh gradient blobs — warm stone, no purple */
+  /* Mesh gradient blobs */
   --mesh-warm-1: rgb(120 113 108 / 0.09);
   --mesh-warm-2: rgb(87 83 78 / 0.07);
   --mesh-warm-3: rgb(68 64 60 / 0.08);
   --mesh-warm-4: rgb(41 37 36 / 0.11);
   --mesh-accent: rgb(52 211 153 / 0.04);
 
+  /* Glass surfaces */
+  --glass-bg: rgb(255 255 255 / 0.06);
+  --glass-bg-strong: rgb(255 255 255 / 0.09);
+  --glass-bg-elevated: rgb(255 255 255 / 0.12);
+  --glass-border: rgb(255 255 255 / 0.12);
+  --glass-border-strong: rgb(255 255 255 / 0.18);
+  --glass-highlight: rgb(255 255 255 / 0.08);
+  --glass-blur: 16px;
+  --glass-blur-lg: 24px;
+  --glass-blur-xl: 36px;
+  /* Hero — heavier frost for video legibility */
+  --hero-frost-bg: rgb(8 8 8 / 0.55);
+  --hero-frost-plate-bg: rgb(12 12 12 / 0.72);
+  --hero-frost-plate-border: rgb(255 255 255 / 0.22);
+  --hero-frost-blur: 28px;
+  --hero-frost-plate-blur: 40px;
+  --radius-sm: 0.75rem;
+  --radius-md: 1rem;
+  --radius-lg: 1.25rem;
+  --radius-xl: 1.5rem;
+  --radius-2xl: 1.75rem;
+  --radius-pill: 9999px;
+
   /* Typography */
   --font-body: "Geist", -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: "Geist Mono", ui-monospace, monospace;
   --font-display-stat: "Silkscreen", cursive;
-
-  /* Glass surfaces */
-  --glass-nav: rgb(255 255 255 / 0.1);
-  --glass-card: rgb(255 255 255 / 0.06);
-  --glass-blur-lg: 16px;
-  --glass-blur-xl: 24px;
 
   /* Motion */
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
@@ -75,32 +92,97 @@
   }
 }
 
+/* Core glass utilities */
+.glass-panel {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--archive-specimen-shadow);
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.15);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.15);
+}
+
+.glass-panel-strong {
+  background: var(--glass-bg-strong);
+  border: 1px solid var(--glass-border-strong);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--archive-specimen-shadow);
+  backdrop-filter: blur(var(--glass-blur-lg)) saturate(1.15);
+  -webkit-backdrop-filter: blur(var(--glass-blur-lg)) saturate(1.15);
+}
+
+.glass-header {
+  background: rgb(10 10 10 / 0.55);
+  border-bottom: 1px solid var(--glass-border);
+  backdrop-filter: blur(var(--glass-blur-xl)) saturate(1.15);
+  -webkit-backdrop-filter: blur(var(--glass-blur-xl)) saturate(1.15);
+}
+
+.glass-nav {
+  background: var(--glass-bg-elevated);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-pill);
+  backdrop-filter: blur(var(--glass-blur-lg)) saturate(1.15);
+  -webkit-backdrop-filter: blur(var(--glass-blur-lg)) saturate(1.15);
+}
+
+.glass-input-shell {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-pill);
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.15);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.15);
+  box-shadow: inset 0 1px 0 var(--glass-highlight);
+}
+
+.glass-section {
+  background: rgb(10 10 10 / 0.72);
+  border-top: 1px solid var(--glass-border);
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.15);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.15);
+}
+
+.glass-pill {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-pill);
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.15);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.15);
+}
+
+.glass-pill-active {
+  background: var(--glass-bg-elevated);
+  border: 1px solid var(--glass-border-strong);
+  border-radius: var(--radius-pill);
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.15);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.15);
+}
+
 /* Landing CTA */
 .name-cta-gradient {
   background: linear-gradient(to bottom, var(--name-cta-top), var(--name-cta-bottom));
+  border-radius: var(--radius-pill);
 }
 
 .name-cta-gradient:hover {
   opacity: 0.9;
 }
 
-/* Dashboard CTA — same dark gradient pill */
 .archive-cta {
   background: linear-gradient(to bottom, var(--name-cta-top), var(--name-cta-bottom));
   color: #fff;
+  border-radius: var(--radius-pill);
 }
 
 .archive-cta:hover {
   opacity: 0.9;
 }
 
-/* Stats number — Silkscreen only */
 .name-stat-number {
   font-family: var(--font-display-stat);
   font-weight: 400;
 }
 
-/* Accession label */
 .accession-label {
   font-family: var(--font-mono);
   font-size: 0.625rem;
@@ -108,19 +190,65 @@
   color: var(--archive-muted);
 }
 
-/* Specimen / glass card */
+/* Cards — subtle glass plates */
 .specimen-card {
-  background: rgb(255 255 255 / 0.03);
-  border: 1px solid var(--archive-border);
-  backdrop-filter: blur(8px);
+  position: relative;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--archive-specimen-shadow);
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.15);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.15);
 }
 
 .specimen-card:hover {
-  background: rgb(255 255 255 / 0.05);
-  border-color: var(--archive-border-strong);
+  background: var(--glass-bg-strong);
+  border-color: var(--glass-border-strong);
 }
 
-/* Subtle mesh gradient background */
+.archive-plate {
+  position: relative;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--archive-specimen-shadow);
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.15);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.15);
+}
+
+.archive-plate:hover {
+  background: var(--glass-bg-strong);
+  border-color: var(--glass-border-strong);
+}
+
+.hero-frost-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      to top,
+      rgb(0 0 0 / 0.82) 0%,
+      rgb(0 0 0 / 0.55) 38%,
+      rgb(0 0 0 / 0.35) 68%,
+      rgb(0 0 0 / 0.2) 100%
+    ),
+    var(--hero-frost-bg);
+  backdrop-filter: blur(var(--hero-frost-blur)) saturate(1.1);
+  -webkit-backdrop-filter: blur(var(--hero-frost-blur)) saturate(1.1);
+}
+
+.hero-frost-plate {
+  position: relative;
+  background: var(--hero-frost-plate-bg);
+  border: 1px solid var(--hero-frost-plate-border);
+  border-radius: var(--radius-lg);
+  box-shadow:
+    0 8px 32px rgb(0 0 0 / 0.45),
+    inset 0 1px 0 rgb(255 255 255 / 0.12);
+  backdrop-filter: blur(var(--hero-frost-plate-blur)) saturate(1.2);
+  -webkit-backdrop-filter: blur(var(--hero-frost-plate-blur)) saturate(1.2);
+}
+
 .mesh-bg {
   background-color: var(--archive-bg);
   background-image:

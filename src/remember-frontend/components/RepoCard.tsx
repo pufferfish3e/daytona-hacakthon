@@ -4,6 +4,8 @@ import type { RecommendedRepo } from "../types/dashboard";
 type RepoCardProps = {
   repo: RecommendedRepo;
   onSelect: (repo: RecommendedRepo) => void;
+  /** Pre-built resurrection — opens completed workspace, not a new generation run. */
+  prepared?: boolean;
 };
 
 function RepoThumbnail({
@@ -16,7 +18,7 @@ function RepoThumbnail({
   imageUrl: string;
 }) {
   return (
-    <div className="relative aspect-[16/10] w-full overflow-hidden rounded-xl">
+    <div className="relative aspect-[16/10] w-full overflow-hidden rounded-xl border border-archive-border">
       <img
         src={imageUrl}
         alt={`${owner}/${name} preview`}
@@ -34,19 +36,26 @@ function RepoThumbnail({
   );
 }
 
-export function RepoCard({ repo, onSelect }: RepoCardProps) {
+export function RepoCard({ repo, onSelect, prepared = false }: RepoCardProps) {
   return (
     <button
       type="button"
       onClick={() => onSelect(repo)}
-      className="specimen-card group flex w-full flex-col rounded-2xl p-4 text-left transition-colors hover:border-archive-border-strong"
+      className="specimen-card group flex w-full flex-col p-4 text-left transition-colors"
     >
       <RepoThumbnail owner={repo.owner} name={repo.name} imageUrl={repo.imageUrl} />
       <div className="mt-4 flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <h3 className="truncate text-base font-semibold text-archive-ink">
-            {repo.owner}/{repo.name}
-          </h3>
+          <div className="flex flex-wrap items-center gap-2">
+            <h3 className="truncate text-base font-semibold text-archive-ink">
+              {repo.owner}/{repo.name}
+            </h3>
+            {prepared && (
+              <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-emerald-300">
+                Resurrected
+              </span>
+            )}
+          </div>
           <p className="mt-1 text-sm text-archive-muted">
             {repo.language} · last commit {repo.lastCommitYear}
           </p>

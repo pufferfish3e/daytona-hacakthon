@@ -54,7 +54,7 @@ const parseManifest = (content: string): PackageManifest => {
       engines: stringRecord(parsed.engines), packageManager: optionalString(parsed.packageManager),
       scripts: stringRecord(parsed.scripts),
     };
-  } catch (_error: unknown) { return EMPTY_MANIFEST; }
+  } catch { return EMPTY_MANIFEST; }
 };
 
 const nodeFramework = (dependencies: Record<string, string>): string => {

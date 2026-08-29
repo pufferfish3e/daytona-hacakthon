@@ -1,6 +1,8 @@
 import type { ResurrectionRun } from "@/lib/contracts/run";
 import type { Project, ProjectStatus } from "../types/dashboard";
 import type { ProjectDetail } from "../types/projectDetail";
+import { COMPLETE_MOCK_DETAIL } from "./completeMock";
+import { HERO_DEMO_PROJECT_ID, isHeroDemoProject } from "../lib/demo-presentation";
 import { projectDetailFromRun } from "../lib/run-mapper";
 
 function sessionIdFromProject(id: string): string {
@@ -143,6 +145,9 @@ const DEFAULT_PROFILE: ProjectDetail["profile"] = [
 ];
 
 export function getProjectDetail(project: Project, run?: ResurrectionRun): ProjectDetail {
+  if (isHeroDemoProject(project) || project.id === HERO_DEMO_PROJECT_ID) {
+    return COMPLETE_MOCK_DETAIL;
+  }
   if (run) return projectDetailFromRun(project, run);
 
   const elapsed =

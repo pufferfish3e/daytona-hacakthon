@@ -73,7 +73,7 @@ export function RebuildTerminal({ onVisible }: RebuildTerminalProps) {
     <div
       ref={containerRef}
       data-animate="terminal"
-      className="overflow-hidden rounded-2xl border border-white/10 bg-[#050505]"
+      className="glass-panel overflow-hidden"
     >
       <div className="flex items-center gap-2 border-b border-white/10 px-4 py-3">
         <span className="h-2.5 w-2.5 rounded-full bg-white/15" />

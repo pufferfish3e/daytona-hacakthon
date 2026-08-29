@@ -68,4 +68,17 @@ describe("executeRepairStrategy", () => {
 
     await expect(executeRepairStrategy(input(provider, strategy("old")))).rejects.toThrow("exactly once");
   });
+
+  it("rejects shell command chaining in repair start commands", async () => {
+    const provider = new ActionProvider({ "workspace/repo/package.json": "old" });
+    const chained: RepairStrategy = {
+      ...strategy("old"),
+      actions: [
+        { path: "package.json", reason: "compatibility", replacement: "new", search: "old", type: "replace_text" },
+        { command: "npm start && rm -rf /", expectedPorts: [3000], reason: "start", type: "try_start" },
+      ],
+    };
+
+    await expect(executeRepairStrategy(input(provider, chained))).rejects.toThrow("shell operators");
+  });
 });

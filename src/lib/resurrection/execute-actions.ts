@@ -129,4 +129,7 @@ export const validateRepairActions = (actions: RepairAction[]): void => {
 
 const validateCommand = (command: string): void => {
   if (command.length === 0 || command.length > COMMAND_LENGTH_LIMIT) throw new RepairExecutorError("Repair command length is invalid.");
+  if (/[;&|]|&&|\|\||`|\$\(/.test(command)) {
+    throw new RepairExecutorError("Repair commands must not chain shell operators.");
+  }
 };

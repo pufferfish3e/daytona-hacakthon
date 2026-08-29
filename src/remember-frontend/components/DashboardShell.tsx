@@ -8,7 +8,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="mesh-bg flex min-h-screen flex-col text-archive-ink">
-      <header className="sticky top-0 z-50 flex items-center justify-between border-b border-archive-border bg-[#0a0a0a]/80 px-5 py-4 backdrop-blur-xl sm:px-8">
+      <header className="glass-header sticky top-0 z-50 flex items-center justify-between px-5 py-4 sm:px-8">
         <Link to="/" className="flex items-center gap-2">
           <Logo className="fill-archive-ink" />
           <span className="text-lg font-semibold text-archive-ink">{PRODUCT_NAME}</span>
@@ -19,8 +19,8 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             to="/create"
             className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
               !onGenerated
-                ? "bg-white/10 text-white"
-                : "text-archive-muted hover:bg-white/10 hover:text-white"
+                ? "glass-pill-active text-white"
+                : "text-archive-muted hover:bg-white/[0.06] hover:text-white"
             }`}
           >
             Discover
@@ -29,8 +29,8 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
             to="/create/generated"
             className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
               onGenerated
-                ? "bg-white/10 text-white"
-                : "text-archive-muted hover:bg-white/10 hover:text-white"
+                ? "glass-pill-active text-white"
+                : "text-archive-muted hover:bg-white/[0.06] hover:text-white"
             }`}
           >
             Workspace

@@ -18,6 +18,8 @@ export type Project = {
   previewUrl?: string;
   logs: LogEntry[];
   createdAt: string;
+  /** Hackathon demo: pinned hero run with local iframe preview */
+  presentationMode?: "hero";
 };
 
 export type RecommendedRepo = {

@@ -1,12 +1,13 @@
 import { useEffect, useRef } from "react";
-import { gsap, ScrollTrigger } from "../lib/gsap";
+import { gsap, getScrollTrigger } from "../lib/gsap";
 
 export function useCreatePageAnimations() {
   const rootRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const root = rootRef.current;
-    if (!root) return;
+    const ScrollTrigger = getScrollTrigger();
+    if (!root || !ScrollTrigger) return;
 
     const ctx = gsap.context(() => {
       const heroItems = root.querySelectorAll("[data-animate='hero']");

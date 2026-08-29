@@ -41,3 +41,10 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# vendored demo source (install locally if needed)
+demo/bonky-inu-devnet/node_modules
+
+# local build / backup artifacts
+/dist
+/remember-vite-backup-20260829
+/.impeccable

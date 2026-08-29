@@ -1,16 +1,18 @@
 import type { ComputeProvider, SandboxRef, SnapshotRef } from "@/lib/compute/provider";
 import { RepairPlanSchema, type RepairStrategy } from "@/lib/contracts/repair";
-import type { ProjectProfile, ResurrectionManifest, ResurrectionRun, RunStatus } from "@/lib/contracts/run";
+import type { ProjectProfile, ResurrectionManifest, ResurrectionRun, RunStatus, VisualProofResult } from "@/lib/contracts/run";
 import type { RunStore } from "@/lib/store/run-store";
+import type { VisualProofAdapter } from "@/lib/nosana/nosana-visual-proof";
 import { runBaseline, type BaselineFailure, type BaselineResult } from "./baseline";
 import { withDeadline } from "./deadline";
 import { detectProject } from "./detect";
 import { assertBeforeDeadline, errorMessage, ResurrectionOrchestrationError, UnsupportedProjectError } from "./errors";
 import { runParallelRepairs, type RepairRaceInput, type RepairRaceResult, type SuccessfulRepair } from "./fork-repair";
 import { collectRepoEvidence, type RepoEvidence } from "./inspect";
-import { TOTAL_RUN_TIMEOUT_MS } from "./limits";
+import { TOTAL_RUN_TIMEOUT_MS, SEED_DISK_GIB } from "./limits";
 import type { RepairPlanner } from "./repair-planner";
 import { RunReporter, type SuccessfulRunUpdate } from "./run-reporter";
+import { resolveScreenshotUrl } from "./screenshot-url";
 import { isVerifiedWebProcess, type VerifiedWebProcess, type WebVerifier } from "./verify";
 
 const REPO_ROOT = "workspace/repo";
@@ -20,6 +22,7 @@ export interface ResurrectionOrchestratorDependencies {
   provider: ComputeProvider;
   planner: RepairPlanner;
   verifier: WebVerifier;
+  visualProof?: VisualProofAdapter;
   now: () => Date;
   verifiedCapabilities: string[];
 }
@@ -78,7 +81,7 @@ export class ResurrectionOrchestrator {
   private async createSeed(run: ResurrectionRun, deadline: number): Promise<SandboxRef> {
     return withDeadline(deadline, (): number => this.nowMs(), "seed allocation", () =>
       this.dependencies.provider.createSeed({
-        cpu: 2, diskGiB: 20, memoryGiB: 4, name: `resurrection-${run.id}-seed`, ttlMinutes: 15,
+        cpu: 2, diskGiB: SEED_DISK_GIB, memoryGiB: 4, name: `resurrection-${run.id}-seed`, ttlMinutes: 15,
       }));
   }
 
@@ -134,8 +137,9 @@ export class ResurrectionOrchestrator {
   private async completeBaseline(context: PreparedRun, baseline: Extract<BaselineResult, { status: "success" }>): Promise<void> {
     if (!isVerifiedWebProcess(baseline.verification)) throw new ResurrectionOrchestrationError("Baseline success lacked objective verification evidence.");
     context.resources.winner = baseline.sandbox;
+    const visualProof = await this.assessVisualProof(context, baseline.verification);
     await this.cleanupSuccess(context.reporter, context.resources, baseline.sandbox.id);
-    await context.reporter.completeSuccess(successUpdate(context, baseline.verification, []));
+    await context.reporter.completeSuccess(successUpdate(context, baseline.verification, [], undefined, visualProof));
     context.resources.isCleaned = true;
   }
 
@@ -168,8 +172,9 @@ export class ResurrectionOrchestrator {
     }
     context.resources.winner = race.winner.sandbox;
     await context.reporter.record("winner", `Selected ${race.winner.strategy.id} by deterministic preservation ranking.`, race.winner.sandbox.id);
+    const visualProof = await this.assessVisualProof(context, race.winner.verification);
     await this.cleanupSuccess(context.reporter, context.resources, race.winner.sandbox.id);
-    await context.reporter.completeSuccess(successUpdate(context, race.winner.verification, race.attempts, race.winner));
+    await context.reporter.completeSuccess(successUpdate(context, race.winner.verification, race.attempts, race.winner, visualProof));
     context.resources.isCleaned = true;
   }
 
@@ -180,7 +185,10 @@ export class ResurrectionOrchestrator {
     if (baseline !== undefined && baseline.id !== winnerId) {
       await this.safeCleanup(reporter, resources, `Deleted baseline fork ${baseline.id}.`, baseline.id, () => this.dependencies.provider.delete(baseline));
     }
-    if (seed !== undefined) await this.safeCleanup(reporter, resources, `Stopped pristine seed ${seed.id}.`, seed.id, () => this.dependencies.provider.stop(seed));
+    if (seed !== undefined) {
+      await this.safeCleanup(reporter, resources, `Stopped pristine seed ${seed.id}.`, seed.id, () => this.dependencies.provider.stop(seed));
+      await this.safeCleanup(reporter, resources, `Deleted pristine seed ${seed.id}.`, seed.id, () => this.dependencies.provider.delete(seed));
+    }
     if (snapshot !== undefined) await this.safeCleanup(reporter, resources, `Deleted pristine snapshot ${snapshot.name}.`, undefined, () => this.dependencies.provider.deleteSnapshot(snapshot));
   }
 
@@ -211,6 +219,24 @@ export class ResurrectionOrchestrator {
     await reporter.completeFailure(reason);
   }
 
+  private async assessVisualProof(context: PreparedRun, verification: VerifiedWebProcess): Promise<VisualProofResult | undefined> {
+    if (!context.profile.isGui || this.dependencies.visualProof === undefined) return undefined;
+    const screenshotUrl = resolveScreenshotUrl(verification.previewUrl);
+    if (screenshotUrl === undefined) {
+      await context.reporter.record("verifying", "Skipped GPU visual proof because the preview URL is not a safe HTTPS URL.");
+      return undefined;
+    }
+    await context.reporter.record("verifying", "Requesting optional GPU visual proof for the resurrected GUI.");
+    try {
+      return await this.dependencies.visualProof.assess({ screenshotUrl });
+    } catch (error: unknown) {
+      const reason = errorMessage(error);
+      console.error("visual proof assessment failed", { runId: context.run.id, reason });
+      await context.reporter.record("verifying", `GPU visual proof could not be completed: ${reason}`);
+      return undefined;
+    }
+  }
+
   private nowMs(): number { return this.dependencies.now().getTime(); }
 }
 
@@ -219,9 +245,10 @@ const successUpdate = (
   verification: VerifiedWebProcess,
   attempts: ResurrectionRun["attempts"],
   winner?: SuccessfulRepair,
+  visualProof?: VisualProofResult,
 ): SuccessfulRunUpdate => ({
   attempts, manifest: buildManifest(context, verification, winner), previewPort: verification.port,
-  previewUrl: verification.previewUrl,
+  previewUrl: verification.previewUrl, visualProof,
 });
 
 const buildManifest = (context: PreparedRun, verification: VerifiedWebProcess, winner?: SuccessfulRepair): ResurrectionManifest => ({

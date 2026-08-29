@@ -1,10 +1,8 @@
 import { CreateRunRequestSchema } from "@/lib/contracts/api";
 import { errorMessage } from "@/lib/contracts/validation";
-import { getDemoRunService } from "@/lib/demo/demo-run-service";
 import { InvalidRepositoryUrlError } from "@/lib/github/parse-url";
 import { createRun, type CreateRunDependencies } from "@/lib/jobs/start-run";
-import { getProductionRunService } from "@/lib/server/production-run-service";
-import { getResurrectionServiceState } from "@/lib/server/runtime";
+import { getCachedResurrectionRunService, getResurrectionServiceState } from "@/lib/server/runtime";
 
 export const createPostRunHandler = (dependencies?: CreateRunDependencies) => async (request: Request): Promise<Response> => {
   if (!dependencies) {
@@ -22,7 +20,7 @@ export const createPostRunHandler = (dependencies?: CreateRunDependencies) => as
   }
 };
 
-export const POST = createPostRunHandler(getDemoRunService() ?? getProductionRunService());
+export const POST = createPostRunHandler(getCachedResurrectionRunService());
 
 const parseRequestBody = async (request: Request): Promise<{ success: true; data: { repoUrl: string } } | { success: false; error: string }> => {
   try {

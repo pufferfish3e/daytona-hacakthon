@@ -30,7 +30,7 @@ const STEPS = [
 
 export function PipelineSection() {
   return (
-    <section id="pipeline" className="border-t border-white/10 bg-[#0a0a0a] px-5 py-20 sm:px-8 sm:py-28 lg:px-12">
+    <section id="pipeline" className="glass-section px-5 py-20 sm:px-8 sm:py-28 lg:px-12">
       <div className="mx-auto max-w-6xl">
         <div data-animate="section">
           <SectionLabel>Pipeline</SectionLabel>
@@ -47,7 +47,7 @@ export function PipelineSection() {
             <article
               key={step.num}
               data-animate="card"
-              className="group rounded-2xl border border-white/10 bg-white/[0.03] p-6 transition-colors hover:border-white/20 hover:bg-white/[0.06]"
+              className="archive-plate group p-6 transition-colors"
             >
               <div className="mb-6 flex items-center justify-between">
                 <span className="name-stat-number text-sm text-white/30">{step.num}</span>

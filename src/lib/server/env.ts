@@ -60,9 +60,5 @@ export const resurrectionUnavailableMessage = (config: ResurrectionEnv): string 
     return `Resurrection service is not configured. Set ${config.missingLiveKeys.join(" and ")} for live mode, or set PROJECT_RESURRECTION_DEMO_MODE=true.`;
   }
 
-  if (config.mode === "live") {
-    return "Live resurrection credentials are set, but Daytona/OpenAI adapters are not installed yet. Use demo mode or complete the live adapter integration.";
-  }
-
   return "Resurrection service is not configured.";
 };

@@ -7,7 +7,7 @@ const METRICS = [
 
 export function StatsBarSection() {
   return (
-    <section className="border-y border-white/10 bg-[#0a0a0a]">
+    <section className="glass-section border-y border-white/10">
       <div className="mx-auto grid max-w-6xl grid-cols-2 lg:grid-cols-4">
         {METRICS.map((metric, index) => (
           <div
