@@ -1,0 +1,24 @@
+{
+  "extends": "/Users/pufferfish/Desktop/daytona/tsconfig.json",
+  "compilerOptions": {
+    "incremental": false,
+    "noEmit": true
+  },
+  "files": [
+    "/Users/pufferfish/Desktop/daytona/src/app/api/runs/route.ts",
+    "/Users/pufferfish/Desktop/daytona/src/lib/demo/demo-compute-provider.ts",
+    "/Users/pufferfish/Desktop/daytona/src/lib/demo/demo-repair-planner.ts",
+    "/Users/pufferfish/Desktop/daytona/src/lib/demo/demo-run-service.ts",
+    "/Users/pufferfish/Desktop/daytona/src/lib/demo/demo-web-verifier.ts",
+    "/Users/pufferfish/Desktop/daytona/src/lib/daytona/client.ts",
+    "/Users/pufferfish/Desktop/daytona/src/lib/daytona/daytona-provider.ts",
+    "/Users/pufferfish/Desktop/daytona/src/lib/openai/openai-repair-planner.ts",
+    "/Users/pufferfish/Desktop/daytona/src/lib/nosana/nosana-visual-proof.ts",
+    "/Users/pufferfish/Desktop/daytona/src/lib/server/production-run-service.ts"
+  ],
+  "include": [],
+  "exclude": [
+    "/Users/pufferfish/Desktop/daytona/src/**/*.test.ts",
+    "/Users/pufferfish/Desktop/daytona/src/**/*.test.tsx"
+  ]
+}

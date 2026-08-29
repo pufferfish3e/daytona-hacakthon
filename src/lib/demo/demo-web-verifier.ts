@@ -5,6 +5,7 @@ const DEMO_VERIFICATION_DELAY_MS = 20;
 
 export class DemoWebVerifier implements WebVerifier {
   public async verify(_input: VerificationInput): Promise<VerificationResult> {
+    void _input;
     await demoVerificationDelay();
     return {
       httpStatus: 200,

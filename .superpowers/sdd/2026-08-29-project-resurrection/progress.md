@@ -27,3 +27,6 @@
 - Ruling: Carry the exported-POST composition root and shared-store issue into the orchestrator/adapters integration package — the real dependencies do not exist yet, and pretending they do would reintroduce guaranteed-failure jobs — cost if wrong: the API stays 503 until the final backend wiring task.
 - Orchestration review: one Critical deadline finding and six Important findings; fix round 1 dispatched.
 - Ruling: Retain the successful run's stopped pristine seed until TTL instead of deleting it — the plan records Daytona parent/active-child lineage as a deletion constraint — cost if wrong: one stopped seed consumes quota for up to 15 minutes.
+- Ruling: User replaced the full-provider objective with an isolated local demo path; real Daytona/OpenAI/Nosana adapters and remaining orchestration review findings are deferred — cost if wrong: demo behavior proves UI polling only, not real resurrection.
+- Local demo implementation: complete; static review approved.
+- Focused checks: demo/POST ESLint exit 0; focused production TypeScript exit 0; direct route smoke returned non-demo 503, unsafe URL 400, valid POST 202, and terminal success.
