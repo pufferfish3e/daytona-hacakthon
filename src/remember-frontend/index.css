@@ -1,0 +1,13 @@
+@import "tailwindcss";
+@import "./design-tokens.css";
+
+@theme {
+  --font-sans: "Geist", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-silkscreen: "Silkscreen", cursive;
+}
+
+body {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

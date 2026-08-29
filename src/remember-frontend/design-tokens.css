@@ -1,0 +1,65 @@
+/**
+ * [Name] Design System — tokens derived from hero + landing page
+ */
+
+:root {
+  /* Core palette */
+  --name-black: #010101;
+  --name-bg: #0a0a0a;
+  --name-bg-deep: #050505;
+  --name-cta-top: #2b2b2b;
+  --name-cta-bottom: #101010;
+
+  /* Typography */
+  --font-body: "Geist", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-display-stat: "Silkscreen", cursive;
+
+  /* Glass surfaces */
+  --glass-nav: rgb(255 255 255 / 0.1);
+  --glass-card: rgb(255 255 255 / 0.1);
+  --glass-blur-lg: 16px;
+  --glass-blur-xl: 24px;
+
+  /* Motion */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-fast: 300ms;
+  --duration-panel: 500ms;
+  --stagger-step: 60ms;
+
+  /* Layout */
+  --section-px: 1.25rem;
+  --section-px-sm: 2rem;
+  --section-px-lg: 3rem;
+  --section-pb: 2rem;
+  --section-pb-sm: 3rem;
+  --section-pb-lg: 4rem;
+}
+
+@media (min-width: 640px) {
+  :root {
+    --section-px: var(--section-px-sm);
+    --section-pb: var(--section-pb-sm);
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --section-px: var(--section-px-lg);
+    --section-pb: var(--section-pb-lg);
+  }
+}
+
+/* CTA gradient pill */
+.name-cta-gradient {
+  background: linear-gradient(to bottom, var(--name-cta-top), var(--name-cta-bottom));
+}
+
+.name-cta-gradient:hover {
+  opacity: 0.9;
+}
+
+/* Stats number — Silkscreen only */
+.name-stat-number {
+  font-family: var(--font-display-stat);
+  font-weight: 400;
+}
