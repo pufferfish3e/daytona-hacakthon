@@ -1,8 +1,5 @@
-import { useNavigate } from "react-router-dom";
 import { RepoUrlInput } from "../components/RepoUrlInput";
 import { PRODUCT_NAME, VIDEO_SRC } from "../constants";
-import { parseGitHubUrl } from "../data/mock";
-import { useProjects } from "../context/ProjectsContext";
 
 function StatsCard() {
   return (
@@ -45,27 +42,23 @@ function TestimonialCard() {
   );
 }
 
-function HeroRepoInput() {
-  const navigate = useNavigate();
-  const { createFromUrl } = useProjects();
+interface HeroSectionProps {
+  error?: string;
+  onSubmit?: (url: string) => void;
+}
 
-  function handleSubmit(url: string) {
-    if (!parseGitHubUrl(url)) {
-      navigate("/create");
-      return;
-    }
-    const project = createFromUrl(url);
-    if (project) navigate(`/create/generated/${project.id}`);
-  }
+function HeroRepoInput({ error, onSubmit }: HeroSectionProps) {
+  const handleSubmit = (url: string): void => onSubmit?.(url);
 
   return (
     <div className="mt-6 sm:mt-8">
       <RepoUrlInput onSubmit={handleSubmit} buttonLabel="Remember this repo" />
+      {error && <p className="mt-3 text-sm text-red-400">{error}</p>}
     </div>
   );
 }
 
-export function HeroSection() {
+export function HeroSection({ error, onSubmit }: HeroSectionProps) {
   return (
     <section className="relative min-h-screen w-full overflow-hidden">
       <video
@@ -88,7 +81,7 @@ export function HeroSection() {
               to be experienced. {PRODUCT_NAME} rebuilds dormant repos in isolated sandboxes and
               turns them into prototypes anyone can use.
             </p>
-            <HeroRepoInput />
+            <HeroRepoInput error={error} onSubmit={onSubmit} />
           </div>
 
           <div className="flex flex-col gap-4 sm:flex-row sm:gap-4 lg:gap-4">
