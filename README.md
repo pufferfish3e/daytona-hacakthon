@@ -9,6 +9,83 @@ The application is designed as a complete product with two execution modes:
 
 The same API and frontend flow are used in both modes.
 
+## See Remember in action
+
+These screens show the complete product story: submit a repository, watch the repair race, inspect the result, and recover gracefully when a preview cannot be produced.
+
+<p align="center">
+  <img src="public/remember-layout-a-landing.png" alt="Remember landing page with a repository URL input" width="48%" />
+  <img src="public/remember-layout-b-repair-race.png" alt="Remember repair race showing parallel repair candidates" width="48%" />
+</p>
+<p align="center"><em>Start a run, then follow the bounded repair race as candidates are evaluated.</em></p>
+
+<p align="center">
+  <img src="public/remember-layout-c-success.png" alt="Remember successful resurrection result with a live preview" width="48%" />
+  <img src="public/remember-layout-e-project-detail.png" alt="Remember project detail view with timeline and verification evidence" width="48%" />
+</p>
+<p align="center"><em>Review the selected winner, evidence timeline, and the generated preview.</em></p>
+
+<p align="center">
+  <img src="public/remember-layout-d-landing-editorial.png" alt="Remember editorial landing-page layout" width="31%" />
+  <img src="public/remember-layout-f-no-preview.png" alt="Remember result state when no safe preview is available" width="64%" />
+</p>
+<p align="center"><em>The visual system supports both the marketing surface and a safe no-preview outcome.</em></p>
+
+### Product flow
+
+```mermaid
+flowchart LR
+    A[Public GitHub URL] --> B[Validate and canonicalize]
+    B --> C[Persist run ID]
+    C --> D[Create Daytona sandbox]
+    D --> E[Inspect repository]
+    E --> F[Preserve pristine seed]
+    F --> G[Verify baseline]
+    G -->|ready| H[Return verified preview]
+    G -->|failed| I[Create three isolated repair candidates]
+    I --> J[Execute bounded repairs in parallel]
+    J --> K[Verify candidates]
+    K --> L[Rank and select winner]
+    L --> M[Clean up losers]
+    M --> N[Return preview and evidence]
+    N -. optional .-> O[Nosana visual proof]
+```
+
+### Runtime architecture
+
+```mermaid
+flowchart TB
+    UI[Remember web UI]
+    API[Next.js route handlers\nPOST /api/runs\nGET /api/runs/:id]
+    COMPOSE[Runtime composition]
+    ORCH[Resurrection orchestrator]
+    STORE[(FileRunStore\natomic JSON state)]
+    DAYTONA[Daytona provider\nisolated sandboxes]
+    OPENAI[OpenAI repair planner\nstructured actions]
+    NOSANA[Nosana visual proof\noptional, post-verification]
+    PREVIEW[Safe preview URL]
+
+    UI <--> API
+    API --> COMPOSE --> ORCH
+    ORCH <--> STORE
+    ORCH --> DAYTONA
+    ORCH --> OPENAI
+    ORCH --> PREVIEW
+    ORCH -. screenshot only .-> NOSANA
+    DEMO[Demo adapters\ndeterministic and credential-free] --> COMPOSE
+    LIVE[Live adapters\nprovider-backed] --> COMPOSE
+```
+
+### Screens and evidence
+
+| Screen | What it demonstrates | Boundary it makes visible |
+| --- | --- | --- |
+| Landing | A user can submit a public repository URL | URL validation begins before any provider call |
+| Repair race | Three candidates are evaluated independently | Repairs happen in isolated forks of the pristine seed |
+| Success | A winner is selected and a preview is available | Verification gates preview publication |
+| Project detail | Events, attempts, and evidence are inspectable | Run state is persisted and pollable by run ID |
+| No preview | The product can report failure without unsafe links | Preview delivery is fail-closed |
+
 ## Product workflow
 
 1. The user submits a public HTTPS GitHub URL.
