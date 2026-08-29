@@ -2,34 +2,41 @@
 
 Remember brings dormant public GitHub applications back to life. Submit a repository, inspect its structure in an isolated environment, establish a clean baseline, repair the smallest viable set of issues, verify the running result, and return a preview that people can open.
 
-The application is designed as a complete product with two execution modes:
-
-- **Demo mode** is deterministic, local, credential-free, and suitable for rehearsals.
-- **Live mode** uses Daytona for isolated execution and OpenAI for structured repair planning. Nosana visual proof is an optional post-verification capability for GUI projects.
-
-The same API and frontend flow are used in both modes.
+Remember is a production-oriented workflow: Daytona provides the isolated execution
+environment, OpenAI provides structured repair planning, and Nosana provides bounded
+visual proof for GUI projects after objective verification.
 
 ## See Remember in action
 
-These screens show the complete product story: submit a repository, watch the repair race, inspect the result, and recover gracefully when a preview cannot be produced.
+These screens show the complete product story: discover a dormant repository, submit it,
+watch Daytona and Nosana provision evidence, follow the repair race, and recover
+gracefully when a preview cannot be produced.
 
 <p align="center">
-  <img src="public/remember-layout-a-landing.png" alt="Remember landing page with a repository URL input" width="48%" />
-  <img src="public/remember-layout-b-repair-race.png" alt="Remember repair race showing parallel repair candidates" width="48%" />
+  <img src="public/remember-layout-d-landing-editorial.png" alt="Remember archive discovery page with dormant repository cards and search" width="48%" />
+  <img src="public/remember-layout-a-landing.png" alt="Remember repository submission hero with a live preview promise" width="48%" />
 </p>
-<p align="center"><em>Start a run, then follow the bounded repair race as candidates are evaluated.</em></p>
+<p align="center"><em>Discover an archived project, then start a new resurrection from its public GitHub URL.</em></p>
 
 <p align="center">
-  <img src="public/remember-layout-c-success.png" alt="Remember successful resurrection result with a live preview" width="48%" />
-  <img src="public/remember-layout-e-project-detail.png" alt="Remember project detail view with timeline and verification evidence" width="48%" />
+  <img src="public/remember-layout-b-repair-race.png" alt="Remember live infrastructure view showing a Daytona sandbox and Nosana visual proof" width="48%" />
+  <img src="public/remember-layout-e-project-detail.png" alt="Remember repair strategy view with three isolated candidate strategies" width="48%" />
 </p>
-<p align="center"><em>Review the selected winner, evidence timeline, and the generated preview.</em></p>
+<p align="center"><em>Daytona provisions the isolated seed while Nosana waits for bounded visual verification; three repair strategies can then race from the same snapshot.</em></p>
 
 <p align="center">
-  <img src="public/remember-layout-d-landing-editorial.png" alt="Remember editorial landing-page layout" width="31%" />
-  <img src="public/remember-layout-f-no-preview.png" alt="Remember result state when no safe preview is available" width="64%" />
+  <img src="public/remember-layout-c-success.png" alt="Remember successful resurrection result with a verified live preview" width="48%" />
+  <img src="public/remember-layout-f-no-preview.png" alt="Remember fail-closed result when no safe preview is available" width="48%" />
 </p>
-<p align="center"><em>The visual system supports both the marketing surface and a safe no-preview outcome.</em></p>
+<p align="center"><em>Successful runs expose a verified preview; unsuccessful runs preserve the evidence without publishing an unsafe link.</em></p>
+
+### Provider responsibilities
+
+| Provider | Dedicated responsibility | Evidence surfaced in the app |
+| --- | --- | --- |
+| Daytona | Create resource-limited sandboxes, clone repositories, run commands, fork repair candidates, collect logs, and issue signed previews | Sandbox status, isolation controls, process output, and preview URL |
+| OpenAI | Convert bounded inspection evidence into structured repair actions | Repair hypotheses, changed files, and candidate strategy metadata |
+| Nosana | Run post-verification visual proof for GUI projects | Visual-proof status, classification, and job reference |
 
 ### Product flow
 
@@ -57,28 +64,25 @@ flowchart LR
 flowchart TB
     UI[Remember web UI]
     API[Next.js route handlers\nPOST /api/runs\nGET /api/runs/:id]
-    COMPOSE[Runtime composition]
     ORCH[Resurrection orchestrator]
     STORE[(FileRunStore\natomic JSON state)]
-    DAYTONA[Daytona provider\nisolated sandboxes]
+    DAYTONA[Daytona provider\nexecution and previews]
     OPENAI[OpenAI repair planner\nstructured actions]
-    NOSANA[Nosana visual proof\noptional, post-verification]
+    NOSANA[Nosana visual proof\npost-verification GUI evidence]
     PREVIEW[Safe preview URL]
 
     UI <--> API
-    API --> COMPOSE --> ORCH
+    API --> ORCH
     ORCH <--> STORE
     ORCH --> DAYTONA
     ORCH --> OPENAI
     ORCH --> PREVIEW
-    ORCH -. screenshot only .-> NOSANA
-    DEMO[Demo adapters\ndeterministic and credential-free] --> COMPOSE
-    LIVE[Live adapters\nprovider-backed] --> COMPOSE
+    ORCH -. bounded screenshot .-> NOSANA
 ```
 
 ### Screens and evidence
 
-| Screen | What it demonstrates | Boundary it makes visible |
+| Screen | What it shows | Boundary it makes visible |
 | --- | --- | --- |
 | Landing | A user can submit a public repository URL | URL validation begins before any provider call |
 | Repair race | Three candidates are evaluated independently | Repairs happen in isolated forks of the pristine seed |
@@ -100,34 +104,7 @@ flowchart TB
 10. Repair actions are bounded, ordered, and restricted to the repository workspace.
 11. Successful candidates are ranked deterministically by preservation and runtime quality.
 12. Losing resources are cleaned up, and the run is updated with events, attempts, evidence, and the selected preview.
-13. For GUI projects, an optional Nosana visual-proof stage can classify one screenshot after objective verification.
-
-## Architecture
-
-The application is a Next.js App Router project. The server-side domain is intentionally separated from provider-specific SDKs.
-
-```text
-Browser
-  │
-  ├── POST /api/runs
-  └── GET  /api/runs/:id  ← polling
-       │
-       ├── runtime composition
-       │    ├── demo mode
-       │    │    └── deterministic local adapters
-       │    └── live mode
-       │         ├── DaytonaProvider
-       │         ├── OpenAIRepairPlanner
-       │         └── optional Nosana visual proof
-       │
-       ├── FileRunStore
-       └── ResurrectionOrchestrator
-            ├── inspect and detect
-            ├── baseline verification
-            ├── parallel repair race
-            ├── winner selection
-            └── cleanup and reporting
-```
+13. For GUI projects, Nosana classifies one bounded screenshot after objective verification.
 
 ### Core boundaries
 
@@ -136,19 +113,17 @@ Browser
 - `src/lib/compute/provider.ts` is the provider-neutral sandbox interface.
 - `src/lib/daytona/` translates the provider interface to the Daytona SDK.
 - `src/lib/openai/` contains the structured repair-planning adapter.
-- `src/lib/nosana/` contains the optional visual-proof/status adapter.
+- `src/lib/nosana/` contains the visual-proof/status adapter for GUI evidence.
 - `src/lib/store/` persists run state as atomically replaced JSON files.
-- `src/lib/server/` selects demo or live composition from environment configuration.
+- `src/lib/server/` composes the production run service from environment configuration.
 - `src/remember-frontend/` contains the landing, progress, repair-race, preview, and result UI.
 
 ## Requirements
 
 - Node.js compatible with the installed Next.js toolchain.
 - npm.
-- For live mode: Daytona and OpenAI credentials.
-- For optional GUI visual proof: a configured Nosana visual-proof endpoint and API key.
-
-No credential is required for demo mode.
+- Daytona and OpenAI credentials for repository execution and repair planning.
+- A configured Nosana visual-proof endpoint and API key for GUI evidence.
 
 ## Installation
 
@@ -166,47 +141,22 @@ cp .env.example .env
 
 Never commit `.env`, API keys, wallet files, signed preview URLs, or provider tokens.
 
-## Run the complete local demo
+## Run Remember locally
 
 Use two terminals.
 
-Terminal 1 — start the static resurrected preview app:
+Start the Next.js application with the required server-side credentials:
 
 ```bash
-npm run demo:preview
+DAYTONA_API_KEY=replace-me \
+OPENAI_API_KEY=replace-me \
+npm run dev
 ```
 
-Terminal 2 — start Next.js in deterministic demo mode:
+Open [http://localhost:3000](http://localhost:3000), submit a public HTTPS GitHub URL,
+and follow the run through inspection, repair, verification, and preview publication.
 
-```bash
-PROJECT_RESURRECTION_DEMO_MODE=true npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000). Submit any valid public GitHub URL. Demo mode does not clone the URL, execute host commands, call a network service, or use credentials. It supplies deterministic repository evidence and drives the full visible lifecycle to success.
-
-The demo preview is served at [http://localhost:3000/preview/live](http://localhost:3000/preview/live), proxied to the standalone preview server. Change `DEMO_PREVIEW_PORT` if port `5174` is unavailable.
-
-## Runtime modes
-
-### Demo mode
-
-Set:
-
-```dotenv
-PROJECT_RESURRECTION_DEMO_MODE=true
-```
-
-Demo mode is the recommended path for local development, UI work, and a repeatable presentation. It is not evidence that a real repository was repaired.
-
-### Live mode
-
-Set demo mode to `false` or leave it unset, then provide the required server-only credentials:
-
-```dotenv
-DAYTONA_API_KEY=replace-me
-OPENAI_API_KEY=replace-me
-OPENAI_REPAIR_MODEL=gpt-5.6-sol
-```
+The server never sends provider credentials to the browser.
 
 Optional Daytona configuration:
 
@@ -215,11 +165,13 @@ DAYTONA_API_URL=
 DAYTONA_TARGET=
 ```
 
-Live mode composes a `FileRunStore`, `DaytonaProvider`, `OpenAIRepairPlanner`, and the objective web verifier. If either required live key is missing, the API remains unavailable instead of guessing or falling back to external services.
+The production service composes a `FileRunStore`, `DaytonaProvider`, `OpenAIRepairPlanner`, and the objective web verifier. If either required provider key is missing, the API remains unavailable instead of guessing or falling back to external services.
 
 ### Nosana visual proof
 
-Nosana is an optional post-verification stage for GUI projects. Configure the server-side integration only when its endpoint contract has been verified:
+Nosana owns the visual-proof step for GUI projects. It runs after objective process and
+HTTP verification, receives only the bounded screenshot reference required by the
+configured endpoint, and returns a visual classification and job status:
 
 ```dotenv
 NOSANA_API_KEY=replace-me
@@ -227,21 +179,21 @@ NOSANA_MARKET=
 NOSANA_VISUAL_ENDPOINT_URL=https://verified-nosana-endpoint.example/proof
 ```
 
-The visual-proof adapter sends only the bounded screenshot reference required by the configured endpoint. It must never receive repository source, secrets, logs containing credentials, or signed preview tokens. If visual proof is unavailable, the core resurrection result remains distinct from the visual-proof result.
+Nosana must never receive repository source, secrets, logs containing credentials, or
+signed preview tokens. If visual proof is unavailable, the verified application result
+remains distinct from the visual-proof result.
 
 ## Environment variables
 
 | Variable | Purpose | Required |
 |---|---|---|
-| `PROJECT_RESURRECTION_DEMO_MODE` | Force deterministic local demo mode when `true` | Demo only |
 | `PROJECT_RESURRECTION_RUN_DIR` | Directory for per-run JSON state | No; OS temp directory is used |
 | `PROJECT_RESURRECTION_PREVIEW_URL` | Preview URL returned after success | No |
 | `NEXT_PUBLIC_PROJECT_RESURRECTION_PREVIEW_URL` | Browser iframe preview target | No |
-| `DEMO_PREVIEW_PORT` | Port for `demo-preview-server.mjs` | No; defaults to `5174` |
-| `DAYTONA_API_KEY` | Daytona server credential | Live required |
+| `DAYTONA_API_KEY` | Daytona server credential | Required |
 | `DAYTONA_API_URL` | Optional Daytona API URL override | No |
 | `DAYTONA_TARGET` | Optional Daytona target/region | No |
-| `OPENAI_API_KEY` | OpenAI server credential for repair planning | Live required |
+| `OPENAI_API_KEY` | OpenAI server credential for repair planning | Required |
 | `OPENAI_REPAIR_MODEL` | OpenAI model used for repair planning | No; defaults to `gpt-5.6-sol` |
 | `NOSANA_API_KEY` | Nosana server credential | Visual proof only |
 | `NOSANA_MARKET` | Optional Nosana market selection | Visual proof only |
@@ -302,39 +254,37 @@ npm run lint
 npm run build
 ```
 
-For the deterministic route lifecycle, run:
-
-```bash
-node --experimental-loader ./.superpowers/sdd/2026-08-29-project-resurrection/ts-loader.mjs \
-  ./.superpowers/sdd/2026-08-29-project-resurrection/demo-route-smoke.mjs
-```
-
-The smoke check exercises the unsafe-URL rejection, non-demo `503` boundary, demo `202` creation, polling, and terminal success path.
-
-Before a live release, also run the focused tests, strict TypeScript checks, a browser smoke test, real Daytona cases, and independent cleanup verification. A passing local demo is not a substitute for those live checks.
+Before a production release, also run strict TypeScript checks, a browser smoke test,
+real Daytona sandbox cases, Nosana visual-proof cases, and independent cleanup
+verification.
 
 ## Troubleshooting
 
 ### The API returns `503`
 
-Set `PROJECT_RESURRECTION_DEMO_MODE=true` for the local demo, or provide both `DAYTONA_API_KEY` and `OPENAI_API_KEY` for live mode. Restart the Next.js process after changing `.env`.
+Provide both `DAYTONA_API_KEY` and `OPENAI_API_KEY`, then restart the Next.js process
+after changing `.env`.
 
 ### The preview is unavailable
 
-Start `npm run demo:preview`, confirm `DEMO_PREVIEW_PORT`, and ensure the Next.js rewrite points to the same port. A successful core run may intentionally have no preview URL.
+Confirm the Daytona sandbox is running the detected start command, the configured port
+is reachable, and the signed preview URL has not expired. A verified core run may
+intentionally have no visual-proof result.
 
 ### A run appears stuck
 
-Inspect the JSON file under `PROJECT_RESURRECTION_RUN_DIR` or the OS temporary run directory. In live mode, check provider credentials, sandbox availability, process logs, and configured ports without printing secrets or signed URLs.
-
-### Build fails on test imports
-
-The test files use Vitest. Install the project’s approved test dependency before treating a typecheck failure from missing Vitest declarations as an application-runtime failure.
+Inspect the JSON file under `PROJECT_RESURRECTION_RUN_DIR` or the OS temporary run
+directory. Check Daytona sandbox availability, process logs, configured ports, and
+Nosana endpoint responses without printing secrets or signed URLs.
 
 ## Current delivery boundary
 
-The local product flow is complete and repeatable in demo mode. The live provider boundaries are implemented behind explicit server-side configuration, while credentials-backed Daytona/OpenAI/Nosana execution, full integration coverage, and final independent cleanup/demo sign-off remain release gates rather than assumptions.
+Remember’s production path is implemented around explicit server-side provider
+boundaries: Daytona handles isolated execution and previews, OpenAI plans bounded
+repairs, and Nosana handles post-verification visual proof. Credentials, provider
+endpoint configuration, integration coverage, and independent cleanup verification are
+required before deployment.
 
-## License and contribution
+## Contribution
 
-Keep changes narrowly scoped to the owning layer. Preserve the provider interfaces, safety limits, API contract, and server-only secret boundary. Add focused tests for new behavior, run the relevant checks, and document any deferred live verification in the handoff before merging.
+Keep changes narrowly scoped to the owning layer. Preserve the provider interfaces, safety limits, API contract, and server-only secret boundary. Run the relevant checks and document any deferred live verification in the handoff before merging.
